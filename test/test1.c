@@ -92,6 +92,12 @@ static void test2(GLFWwindow* window) {
   csg_drawable_t* draw2 = csg_drawable_create(triangle, green);
   csg_node_set_drawable(node2, draw2);
   csg_node_set_transform(node2, trans2);
+  // other object..
+  csg_node_t* node3 = csg_node_create(root, "Max");
+  csg_transform_t* trans3 = csg_transform_create(3.0f, 0.0f, 0.0f);
+  csg_drawable_t* draw3 = csg_drawable_create(csg_geometry_create_cube(), red);
+  csg_node_set_drawable(node3, draw3);
+  csg_node_set_transform(node3, trans3);
 
   while (glfwWindowShouldClose(window) != GLFW_TRUE) {
     glfwPollEvents();
@@ -119,19 +125,19 @@ static void test2(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
       printf("Left\n");
-      csg_transform_translate(camtrans, -0.1f, 0.0f, 0.0f);
+      csg_transform_translate(camtrans, 0.1f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
       printf("Right\n");
-      csg_transform_translate(camtrans, 0.1f, 0.0f, 0.0f);
+      csg_transform_translate(camtrans, -0.1f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
       printf("Up\n");
-      csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
+      csg_transform_translate(camtrans, 0.0f, -0.1f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
       printf("Down\n");
-      csg_transform_translate(camtrans, 0.0f, -0.1f, 0.0f);
+      csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
     }
 
     csg_viewport_render(view, root);

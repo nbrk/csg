@@ -133,6 +133,7 @@ extern void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
  * Geometries
  */
 extern csg_geometry_t* csg_geometry_create_triangle(void);
+extern csg_geometry_t* csg_geometry_create_cube(void);
 
 /*
  * Materials

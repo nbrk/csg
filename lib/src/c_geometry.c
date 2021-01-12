@@ -36,11 +36,72 @@ csg_geometry_t* csg_geometry_create_triangle(void) {
   glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
   glBufferData(
       GL_ARRAY_BUFFER, 9 * sizeof(GLfloat),
-      (float[9]){-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f},
+      (float[9]){-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f},
       GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(0);
   //  glDeleteBuffers(1, &position_vbo);
+  glBindVertexArray(0);
+
+  return geom;
+}
+
+csg_geometry_t* csg_geometry_create_cube(void) {
+  csg_geometry_t* geom = csg_malloc(sizeof(*geom));
+
+  geom->num_vertices = 36;  // XXX
+  geom->draw_mode = GL_TRIANGLES;
+  geom->indexed_drawing = true;
+
+  glGenVertexArrays(1, &geom->vao);
+  glBindVertexArray(geom->vao);
+  GLuint position_vbo;
+  glGenBuffers(1, &position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat),
+               (float[24]){
+                   // bottom half, cw from near-left, [0]
+                   -0.5f,
+                   -0.5f,
+                   0.5f,
+                   -0.5f,
+                   -0.5f,
+                   -0.5f,
+                   0.5f,
+                   -0.5f,
+                   -0.5f,
+                   0.5f,
+                   -0.5f,
+                   0.5f,
+                   // top half, cw from near-left, [4]
+                   -0.5f,
+                   0.5f,
+                   0.5f,
+                   -0.5f,
+                   0.5f,
+                   -0.5f,
+                   0.5f,
+                   0.5f,
+                   -0.5f,
+                   0.5f,
+                   0.5f,
+                   0.5f,
+               },
+               GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+  GLuint position_ibo;
+  glGenBuffers(1, &position_ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, position_ibo);
+  glBufferData(
+      GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint),
+      (GLuint[36]){0, 1, 2, 2, 3, 1, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0,
+                   1, 5, 6, 6, 3, 1, 1, 5, 4, 4, 0, 1, 3, 7, 6, 6, 2, 3},
+      GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
   glBindVertexArray(0);
 
   return geom;

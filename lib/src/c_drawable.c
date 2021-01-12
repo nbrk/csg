@@ -61,7 +61,11 @@ void drawable_draw(csg_drawable_t* draw, mat4 model_matrix, mat4 view_matrix,
   glUniformMatrix4fv(u_projection, 1, GL_FALSE, projection_matrix[0]);
 
   glBindVertexArray(draw->geometry->vao);
-  glDrawArrays(draw->geometry->draw_mode, 0, draw->geometry->num_vertices);
+  if (draw->geometry->indexed_drawing == true)
+    glDrawElements(draw->geometry->draw_mode, draw->geometry->num_vertices,
+                   GL_UNSIGNED_INT, NULL);
+  else
+    glDrawArrays(draw->geometry->draw_mode, 0, draw->geometry->num_vertices);
   glBindVertexArray(0);
   glUseProgram(0);
 }

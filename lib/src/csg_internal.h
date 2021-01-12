@@ -55,6 +55,7 @@ struct csg_transform_t {
 
 struct csg_geometry_t {
   int num_vertices;
+  bool indexed_drawing;
   GLenum draw_mode;
   GLuint vao;
 };
