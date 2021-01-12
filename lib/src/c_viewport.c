@@ -53,14 +53,13 @@ static void render_forest(csg_node_t* node, mat4 view_matrix,
   // if no transform is set, consider the identity matrix for the node
   mat4 model_matrix;
   if (node->transform != NULL)
-    glm_mat4_copy(node->transform->model_matrix, model_matrix);
+    glm_mat4_copy(node->transform->matrix, model_matrix);
   else
     glm_mat4_identity(model_matrix);
 
   if (node->parent != NULL && node->parent->transform != NULL)
     // incorporate parent's model matrix
-    glm_mat4_mul(node->parent->transform->model_matrix, model_matrix,
-                 model_matrix);
+    glm_mat4_mul(node->parent->transform->matrix, model_matrix, model_matrix);
 
   if (node->drawable != NULL)
     // if we have the drawable then draw it using the combined model matrix
@@ -70,7 +69,7 @@ static void render_forest(csg_node_t* node, mat4 view_matrix,
     render_forest(node->children[i], view_matrix, projection_matrix);
     // restore model matrix
     if (node->transform != NULL)
-      glm_mat4_copy(node->transform->model_matrix, model_matrix);
+      glm_mat4_copy(node->transform->matrix, model_matrix);
   }
 }
 
@@ -81,8 +80,13 @@ void csg_viewport_render(csg_viewport_t* view, csg_node_t* root) {
 
   if (root == NULL) return;
 
-  render_forest(root, view->camera->view_matrix,
-                view->camera->projection_matrix);
+  // apply the camera's model matrix, if any
+  mat4 camera_model_matrix = GLM_MAT4_IDENTITY_INIT;
+  if (view->camera->transform != NULL)
+    glm_mat4_mul(view->camera->transform->matrix, view->camera->view_matrix,
+                 camera_model_matrix);
+
+  render_forest(root, camera_model_matrix, view->camera->projection_matrix);
 }
 
 void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width,

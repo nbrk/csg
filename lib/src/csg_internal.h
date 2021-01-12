@@ -36,11 +36,7 @@ struct csg_viewport_t {
 struct csg_camera_t {
   mat4 view_matrix;
   mat4 projection_matrix;
-  float aspect;
-  csg_camera_projection_e projection_type;
-  vec3 position;
-  vec3 direction;
-  vec3 up;
+  csg_transform_t* transform;
 };
 
 struct csg_node_t {
@@ -54,7 +50,7 @@ struct csg_node_t {
 };
 
 struct csg_transform_t {
-  mat4 model_matrix;
+  mat4 matrix;
 };
 
 struct csg_geometry_t {

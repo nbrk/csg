@@ -24,31 +24,21 @@
 csg_camera_t* csg_camera_create(csg_camera_projection_e proj, float aspect) {
   csg_camera_t* cam = csg_malloc(sizeof(*cam));
 
-  cam->aspect = aspect;
-  cam->position[0] = 0.0f;
-  cam->position[1] = 0.0f;
-  cam->position[2] = 0.0f;
-  cam->direction[0] = 0.0f;
-  cam->direction[1] = 0.0f;
-  cam->direction[2] = -1.0f;
-  cam->up[0] = 0.0f;
-  cam->up[1] = 1.0f;
-  cam->up[2] = 0.0f;
+  cam->transform = NULL;
 
-  // initial view matrix
-  glm_lookat(cam->position, cam->direction, cam->up, cam->view_matrix);
-  //  glm_mat4_identity(cam->view_matrix);
+  //  // initial view matrix
+  //  glm_lookat(cam->position, cam->direction, cam->up, cam->view_matrix);
+  glm_mat4_identity(cam->view_matrix);
 
   // initial proj matrix
-  if (cam->projection_type == CSG_CAMERA_PROJECTION_ORTHOGRAPHIC)
-    glm_ortho_default(cam->aspect, cam->projection_matrix);
-  if (cam->projection_type == CSG_CAMERA_PROJECTION_PERSPECTIVE)
-    glm_perspective_default(cam->aspect, cam->projection_matrix);
+  if (proj == CSG_CAMERA_PROJECTION_ORTHOGRAPHIC)
+    glm_ortho_default(aspect, cam->projection_matrix);
+  if (proj == CSG_CAMERA_PROJECTION_PERSPECTIVE)
+    glm_perspective_default(aspect, cam->projection_matrix);
 
   return cam;
 }
 
-void csg_camera_translate(csg_camera_t* cam, float dx, float dy, float dz) {
-  glm_vec3_add(cam->position, (float[]){dx, dy, dz}, cam->position);  // XXX
-  glm_translate(cam->view_matrix, (float[]){dx, dy, -dz});
+void csg_camera_set_transform(csg_camera_t* cam, csg_transform_t* trans) {
+  cam->transform = trans;
 }

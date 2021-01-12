@@ -98,8 +98,7 @@ extern void csg_viewport_render(csg_viewport_t* view, csg_node_t* root);
  */
 extern csg_camera_t* csg_camera_create(csg_camera_projection_e proj,
                                        float aspect);
-extern void csg_camera_translate(csg_camera_t* cam, float dx, float dy,
-                                 float dz);
+extern void csg_camera_set_transform(csg_camera_t* cam, csg_transform_t* trans);
 
 /*
  * Nodes

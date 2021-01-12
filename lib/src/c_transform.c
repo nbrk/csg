@@ -26,13 +26,13 @@ csg_transform_t* csg_transform_create(float orig_x, float orig_y,
                                       float orig_z) {
   csg_transform_t* trans = csg_malloc(sizeof(*trans));
 
-  glm_mat4_identity(trans->model_matrix);
-  glm_translate(trans->model_matrix, (float[]){orig_x, orig_y, orig_z});
+  glm_mat4_identity(trans->matrix);
+  glm_translate(trans->matrix, (float[]){orig_x, orig_y, orig_z});
 
   return trans;
 }
 
 void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
                              float dz) {
-  glm_translate(trans->model_matrix, (float[]){dx, dy, dz});
+  glm_translate(trans->matrix, (float[]){dx, dy, dz});
 }

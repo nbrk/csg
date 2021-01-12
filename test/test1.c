@@ -53,6 +53,9 @@ static void test1(void) {
 static void test2(GLFWwindow* window) {
   csg_camera_t* cam =
       csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
+  csg_transform_t* camtrans = csg_transform_create(0.0f, 0.0f, -5.0f);
+  csg_camera_set_transform(cam, camtrans);
+
   csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
   csg_viewport_set_clear_color(view, 0.0f, 0.1f, 0.0f, 1.0f);
 
@@ -62,6 +65,9 @@ static void test2(GLFWwindow* window) {
   csg_material_t* red = csg_material_create();
   csg_material_set_color(red, CSG_MATERIAL_COLOR_DIFFUSE, 1.0f, 0.f, 0.0f,
                          1.0f);
+  csg_material_t* green = csg_material_create();
+  csg_material_set_color(green, CSG_MATERIAL_COLOR_DIFFUSE, 0.0f, 1.0f, 0.0f,
+                         1.0f);
 
   // reusable geometry
   csg_geometry_t* triangle = csg_geometry_create_triangle();
@@ -70,16 +76,22 @@ static void test2(GLFWwindow* window) {
   csg_node_t* root = csg_node_create(NULL, NULL);
   // first object..
   csg_node_t* node = csg_node_create(root, "Bob");
-  csg_transform_t* trans = csg_transform_create(0.0f, 0.0f, 0.0f);
+  csg_transform_t* trans = csg_transform_create(-1.0f, 0.0f, 0.0f);
   csg_drawable_t* draw = csg_drawable_create(triangle, blue);
   csg_node_set_drawable(node, draw);
   csg_node_set_transform(node, trans);
   // other object..
   csg_node_t* node1 = csg_node_create(root, "Jack");
-  csg_transform_t* trans1 = csg_transform_create(1.0f, 0.0f, 0.0f);
+  csg_transform_t* trans1 = csg_transform_create(0.0f, 0.0f, 0.0f);
   csg_drawable_t* draw1 = csg_drawable_create(triangle, red);
   csg_node_set_drawable(node1, draw1);
   csg_node_set_transform(node1, trans1);
+  // other object..
+  csg_node_t* node2 = csg_node_create(root, "Jill");
+  csg_transform_t* trans2 = csg_transform_create(1.0f, 0.0f, 0.0f);
+  csg_drawable_t* draw2 = csg_drawable_create(triangle, green);
+  csg_node_set_drawable(node2, draw2);
+  csg_node_set_transform(node2, trans2);
 
   while (glfwWindowShouldClose(window) != GLFW_TRUE) {
     glfwPollEvents();
@@ -90,36 +102,36 @@ static void test2(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
       printf("A\n");
-      csg_transform_translate(trans, -0.05f, 0.0f, 0.0f);
+      csg_transform_translate(trans1, -0.05f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
       printf("D\n");
-      csg_transform_translate(trans, 0.05f, 0.0f, 0.0f);
+      csg_transform_translate(trans1, 0.05f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
       printf("PgUp\n");
-      csg_transform_translate(trans1, 0.0f, 0.0f, 0.1f);
+      csg_transform_translate(camtrans, 0.0f, 0.0f, 0.1f);
     }
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
       printf("PgDn\n");
-      csg_transform_translate(trans1, 0.0f, 0.0f, -0.1f);
+      csg_transform_translate(camtrans, 0.0f, 0.0f, -0.1f);
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
       printf("Left\n");
-      csg_camera_translate(cam, -0.1f, 0.0f, 0.0f);
+      csg_transform_translate(camtrans, -0.1f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
       printf("Right\n");
-      csg_camera_translate(cam, 0.1f, 0.0f, 0.0f);
+      csg_transform_translate(camtrans, 0.1f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
       printf("Up\n");
-      csg_camera_translate(cam, 0.0f, 0.1f, 0.0f);
+      csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
       printf("Down\n");
-      csg_camera_translate(cam, 0.0f, -0.1f, 0.0f);
+      csg_transform_translate(camtrans, 0.0f, -0.1f, 0.0f);
     }
 
     csg_viewport_render(view, root);
