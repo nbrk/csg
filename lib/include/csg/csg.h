@@ -106,6 +106,7 @@ extern void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width,
 extern void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g,
                                          float b, float a);
 extern void csg_viewport_render(csg_viewport_t* view, csg_node_t* root);
+extern csg_camera_t* csg_viewport_get_camera(csg_viewport_t* view);
 
 /*
  * Camera
@@ -146,6 +147,8 @@ extern void csg_transform_set_translation_animation(csg_transform_t* trans,
                                                     csg_animation_t* anim);
 extern void csg_transform_translation_animation_update(csg_transform_t* trans,
                                                        float delta);
+extern void csg_transform_get_position(csg_transform_t* trans, float* x,
+                                       float* y, float* z);
 
 /*
  * Geometries
@@ -171,8 +174,8 @@ extern csg_drawable_t* csg_drawable_create(csg_geometry_t* geom,
  */
 extern void csg_animation_update(csg_animation_t* anim, float delta);
 extern csg_animation_t* csg_animation_create(csg_animation_mode_e mode);
-extern size_t csg_animation_add_waypoint(csg_animation_t* anim, float x,
-                                         float y, float z, float w);
+extern size_t csg_animation_add_point(csg_animation_t* anim, float x, float y,
+                                      float z, float w);
 extern void csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
                                     float* z, float* w);
 extern float csg_animation_get_interpolant(csg_animation_t* anim,

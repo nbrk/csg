@@ -98,3 +98,7 @@ void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width,
   view->width = width;
   view->height = height;
 }
+
+csg_camera_t* csg_viewport_get_camera(csg_viewport_t* view) {
+  return view->camera;
+}

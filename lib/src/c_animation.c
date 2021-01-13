@@ -112,8 +112,8 @@ void csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
   *w = anim->current_value[3];
 }
 
-size_t csg_animation_add_waypoint(csg_animation_t* anim, float x, float y,
-                                  float z, float w) {
+size_t csg_animation_add_point(csg_animation_t* anim, float x, float y, float z,
+                               float w) {
   size_t idx = anim->num_waypoints;
   anim->num_waypoints++;
   anim->waypoints =

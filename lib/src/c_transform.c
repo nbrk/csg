@@ -65,3 +65,10 @@ void csg_transform_translation_animation_update(csg_transform_t* trans,
   glm_translate_make(trans->matrix,
                      trans->translation_animation->current_value);
 }
+
+void csg_transform_get_position(csg_transform_t* trans, float* x, float* y,
+                                float* z) {
+  *x = trans->position[0];
+  *y = trans->position[1];
+  *z = trans->position[2];
+}
