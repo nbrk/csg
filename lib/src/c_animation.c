@@ -23,74 +23,54 @@
 
 #include "csg_internal.h"
 
-static void animation_update_in(csg_animation_t* anim, int segment,
-                                float delta) {
-  assert(segment >= 0 && segment <= anim->num_waypoints - 1);
-
-  anim->interpolant += delta;
-  anim->interpolant = glm_clamp_zo(anim->interpolant);
-
-  vec4* from = &anim->waypoints[segment];
-  vec4* to = &anim->waypoints[segment + 1];
-
-  glm_vec4_lerpc(*from, *to, anim->interpolant, anim->current_value);
-}
+#define ANIMATION_FLAG_COMPLETED 1
+#define ANIMATION_FLAG_STOPPED 1 << 1
 
 void csg_animation_update(csg_animation_t* anim, float delta) {
   assert(anim->num_waypoints >= 2);
-  if (delta == 0.0f) return;
+  assert(anim->current_segment < anim->total_segments);
 
-  if (anim->completed == true) {
-    if (delta < 0) anim->completed = false;
-    return;
+  // skip everything if 'stopped' or no delta
+  if (anim->flags & ANIMATION_FLAG_STOPPED || delta == 0.0f) return;
+
+  // check if we need to restart or run backwards upon completion
+  if (anim->flags & ANIMATION_FLAG_COMPLETED) {
+    if (anim->mode == CSG_ANIMATION_MODE_RESTART) {
+      // restart afresh from the segment zero
+      anim->current_segment = 0;
+      anim->interpolant = 0.0f;
+      anim->flags &= ~ANIMATION_FLAG_COMPLETED;
+    }
+    // ...
   }
 
-  animation_update_in(anim, anim->current_segment, delta);
-  if (anim->interpolant == 1.0f) {
-    if (anim->current_segment < anim->total_segments - 1) {
-      anim->current_segment++;
-      anim->interpolant = 0.0f;  // reset to the beginning of the next segment
-    } else
-      anim->completed = true;
-  } else if (anim->interpolant == 0.0f) {
-    if (anim->current_segment > 0) {
-      anim->current_segment--;
-      anim->interpolant = 1.0f;  // reset to the end of the previous segment
-      return;
+  // process only active, non-completed animations
+  if ((anim->flags & ANIMATION_FLAG_COMPLETED) == 0) {
+    anim->interpolant += delta;
+    anim->interpolant = glm_clamp_zo(anim->interpolant);
+
+    // update the value by lerping inside the active segment
+    vec4* from = &anim->waypoints[anim->current_segment];
+    vec4* to = &anim->waypoints[anim->current_segment + 1];
+    glm_vec4_lerpc(*from, *to, anim->interpolant, anim->current_value);
+
+    // check for end point
+    if (anim->interpolant == 1.0f) {
+      if (anim->current_segment == anim->total_segments - 1) {
+        // end of the whole path
+        anim->flags |= ANIMATION_FLAG_COMPLETED;
+      } else {
+        // end of a segment
+        anim->current_segment++;
+        anim->interpolant = 0.0f;
+        // clear 'completed' as the path may potentially contain new segments
+        anim->flags &= ~ANIMATION_FLAG_COMPLETED;
+      }
     }
   }
 }
 
-// float csg_animation_update(csg_animation_t* anim, float delta) {
-//  assert(anim->num_waypoints >= 2);
-//  if (delta == 0.0f) return anim->interpolant;
-
-//  // determine path segment to lerp inside
-//  if (anim->interpolant == 1.0f &&
-//      anim->current_path_segment >= anim->num_waypoints - 1)
-//    return 1.0f;  // real end of the path
-
-//  vec4* from = &anim->waypoints[anim->current_path_segment];
-//  vec4* to = &anim->waypoints[anim->current_path_segment + 1];
-//  anim->interpolant += delta;
-
-//  // normalize resulting interpolant
-//  if (anim->interpolant > 1.0f) anim->interpolant = 1.0f;
-//  if (anim->interpolant < 0.0f) anim->interpolant = 0.0f;
-
-//  glm_vec4_lerpc(*from, *to, anim->interpolant, anim->current_value);
-
-//  // maybe move to next/prev path segments
-//  if (anim->interpolant == 1.0f &&
-//      anim->current_path_segment < anim->num_waypoints - 1)
-//    anim->current_path_segment++;
-//  if (anim->interpolant == 0.0f && anim->current_path_segment > 0)
-//    anim->current_path_segment--;
-
-//  return anim->interpolant;
-//}
-
-csg_animation_t* csg_animation_create(void) {
+csg_animation_t* csg_animation_create(csg_animation_mode_e mode) {
   csg_animation_t* anim = csg_malloc(sizeof(*anim));
 
   glm_vec4_zero(anim->current_value);
@@ -99,13 +79,14 @@ csg_animation_t* csg_animation_create(void) {
   anim->current_segment = 0;
   anim->total_segments = 0;
   anim->interpolant = 0.0f;
-  anim->completed = false;
+  anim->mode = mode;
+  anim->flags = 0;
 
   return anim;
 }
 
-float csg_animation_get(csg_animation_t* anim, float* x, float* y, float* z,
-                        float* w) {
+float csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
+                              float* z, float* w) {
   *x = anim->current_value[0];
   *y = anim->current_value[1];
   *z = anim->current_value[2];
@@ -113,7 +94,7 @@ float csg_animation_get(csg_animation_t* anim, float* x, float* y, float* z,
   return anim->interpolant;
 }
 
-size_t csg_animation_waypoint_add(csg_animation_t* anim, float x, float y,
+size_t csg_animation_add_waypoint(csg_animation_t* anim, float x, float y,
                                   float z, float w) {
   size_t idx = anim->num_waypoints;
   anim->num_waypoints++;

@@ -58,7 +58,6 @@ void csg_transform_set_translation_animation(csg_transform_t* trans,
 void csg_transform_translation_animation_update(csg_transform_t* trans,
                                                 float delta) {
   if (trans->translation_animation == NULL) return;
-  if (trans->translation_animation->completed == true) return;
 
   csg_animation_update(trans->translation_animation, delta);
 

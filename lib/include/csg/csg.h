@@ -77,6 +77,12 @@ typedef enum {
   CSG_CAMERA_PROJECTION_PERSPECTIVE,
 } csg_camera_projection_e;
 
+typedef enum {
+  CSG_ANIMATION_MODE_ONESHOT,
+  CSG_ANIMATION_MODE_RESTART,
+  CSG_ANIMATION_MODE_OSCILLATE
+} csg_animation_mode_e;
+
 /*
  * FUNCTIONS.
  */
@@ -164,8 +170,8 @@ extern csg_drawable_t* csg_drawable_create(csg_geometry_t* geom,
  * Generic animations
  */
 extern void csg_animation_update(csg_animation_t* anim, float delta);
-extern csg_animation_t* csg_animation_create(void);
-extern size_t csg_animation_waypoint_add(csg_animation_t* anim, float x,
+extern csg_animation_t* csg_animation_create(csg_animation_mode_e mode);
+extern size_t csg_animation_add_waypoint(csg_animation_t* anim, float x,
                                          float y, float z, float w);
-extern float csg_animation_get(csg_animation_t* anim, float* x, float* y,
-                               float* z, float* w);
+extern float csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
+                                     float* z, float* w);

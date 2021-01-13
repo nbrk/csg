@@ -85,7 +85,9 @@ struct csg_animation_t {
   int current_segment;
   int total_segments;
   float interpolant;
-  bool completed;
+
+  csg_animation_mode_e mode;
+  int flags;
 };
 
 extern void drawable_draw(csg_drawable_t* draw, mat4 model_matrix,
