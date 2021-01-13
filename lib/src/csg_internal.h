@@ -51,6 +51,14 @@ struct csg_node_t {
 
 struct csg_transform_t {
   mat4 matrix;
+  csg_animation_t* translation_animation;
+  csg_animation_t* rotation_animation;
+  csg_animation_t* scaling_animation;
+
+  // XXX
+  vec4 position;
+  //  vec4 rotation;
+  //  vec4 scale;
 };
 
 struct csg_geometry_t {
@@ -68,6 +76,16 @@ struct csg_material_t {
 struct csg_drawable_t {
   csg_geometry_t* geometry;
   csg_material_t* material;
+};
+
+struct csg_animation_t {
+  vec4 current_value;
+  vec4* waypoints;
+  int num_waypoints;
+  int current_segment;
+  int total_segments;
+  float interpolant;
+  bool completed;
 };
 
 extern void drawable_draw(csg_drawable_t* draw, mat4 model_matrix,

@@ -50,7 +50,7 @@ void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g,
 
 static void render_forest(csg_node_t* node, mat4 view_matrix,
                           mat4 projection_matrix) {
-  // if no transform is set, consider the identity matrix for the node
+  // incorporate transform; if no transform is set, consider the identity mat
   mat4 model_matrix;
   if (node->transform != NULL)
     glm_mat4_copy(node->transform->matrix, model_matrix);
@@ -65,6 +65,7 @@ static void render_forest(csg_node_t* node, mat4 view_matrix,
     // if we have the drawable then draw it using the combined model matrix
     drawable_draw(node->drawable, model_matrix, view_matrix, projection_matrix);
 
+  // recurse
   for (size_t i = 0; i < node->num_children; i++) {
     render_forest(node->children[i], view_matrix, projection_matrix);
     // restore model matrix

@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 /*
@@ -59,6 +60,10 @@ typedef struct csg_viewport_t csg_viewport_t;
  * @brief Opaque handle to the camera
  */
 typedef struct csg_camera_t csg_camera_t;
+/**
+ * @brief Opaque handle to animation used in transforms
+ */
+typedef struct csg_animation_t csg_animation_t;
 
 /*
  * ENUMS
@@ -81,6 +86,9 @@ typedef enum {
 extern void csg_init(void);
 extern void* csg_malloc(size_t size);
 extern void csg_free(void* mem);
+extern void* csg_realloc(void* mem, size_t size);
+extern void csg_set_malloc_debug(bool val);
+extern void csg_print_malloc_stat(void);
 
 /*
  * Viewport
@@ -128,6 +136,10 @@ extern csg_transform_t* csg_transform_create(float orig_x, float orig_y,
                                              float orig_z);
 extern void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
                                     float dz);
+extern void csg_transform_set_translation_animation(csg_transform_t* trans,
+                                                    csg_animation_t* anim);
+extern void csg_transform_translation_animation_update(csg_transform_t* trans,
+                                                       float delta);
 
 /*
  * Geometries
@@ -148,3 +160,12 @@ extern void csg_material_set_color(csg_material_t* mtrl,
  */
 extern csg_drawable_t* csg_drawable_create(csg_geometry_t* geom,
                                            csg_material_t* mtrl);
+/*
+ * Generic animations
+ */
+extern void csg_animation_update(csg_animation_t* anim, float delta);
+extern csg_animation_t* csg_animation_create(void);
+extern size_t csg_animation_waypoint_add(csg_animation_t* anim, float x,
+                                         float y, float z, float w);
+extern float csg_animation_get(csg_animation_t* anim, float* x, float* y,
+                               float* z, float* w);

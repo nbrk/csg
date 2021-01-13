@@ -36,8 +36,8 @@ csg_node_t* csg_node_create(csg_node_t* parent, void* cookie) {
 
   if (parent != NULL) {
     parent->num_children += 1;
-    parent->children =
-        realloc(parent->children, parent->num_children * sizeof(csg_node_t*));
+    parent->children = csg_realloc(parent->children,
+                                   parent->num_children * sizeof(csg_node_t*));
     parent->children[parent->num_children - 1] = node;
   }
 

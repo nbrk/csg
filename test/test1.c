@@ -53,7 +53,7 @@ static void test1(void) {
 static void test2(GLFWwindow* window) {
   csg_camera_t* cam =
       csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
-  csg_transform_t* camtrans = csg_transform_create(0.0f, 0.0f, -5.0f);
+  csg_transform_t* camtrans = csg_transform_create(0.0f, 0.0f, -20.0f);
   csg_camera_set_transform(cam, camtrans);
 
   csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
@@ -98,6 +98,12 @@ static void test2(GLFWwindow* window) {
   csg_drawable_t* draw3 = csg_drawable_create(csg_geometry_create_cube(), red);
   csg_node_set_drawable(node3, draw3);
   csg_node_set_transform(node3, trans3);
+  csg_animation_t* anim3 = csg_animation_create();
+  csg_transform_set_translation_animation(trans3, anim3);
+  csg_animation_waypoint_add(anim3, 3.0f, 0.f, 0.f, 1.f);
+  csg_animation_waypoint_add(anim3, 4.0f, 0.f, 0.f, 1.f);
+  csg_animation_waypoint_add(anim3, 3.0f, 0.f, 0.f, 1.f);
+  csg_animation_waypoint_add(anim3, 2.0f, 0.f, 0.f, 1.f);
 
   while (glfwWindowShouldClose(window) != GLFW_TRUE) {
     glfwPollEvents();
@@ -139,6 +145,15 @@ static void test2(GLFWwindow* window) {
       printf("Down\n");
       csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
     }
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+      printf("U: ");
+      csg_transform_translation_animation_update(trans3, 0.01f);
+      //      csg_animation_update(anim3, 0.01f);
+      float x, y, z, w;
+      float interpolant = csg_animation_get(anim3, &x, &y, &z, &w);
+      printf("cuurent vec4: %f, %f, %f, %f (interpolant: %f)\n", x, y, z, w,
+             interpolant);
+    }
 
     csg_viewport_render(view, root);
 
@@ -157,6 +172,7 @@ int main(int argc, char** argv) {
   glfwSetInputMode(window1, GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSwapInterval(1);
 
+  csg_set_malloc_debug(true);
   csg_init();
 
   //  test1();

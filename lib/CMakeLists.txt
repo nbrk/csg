@@ -15,6 +15,7 @@ set(SRCS
   src/c_drawable.c
   src/c_viewport.c
   src/c_camera.c
+  src/c_animation.c
   )
 
 set(NAME csg)
