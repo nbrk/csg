@@ -61,8 +61,29 @@ void* csg_malloc(size_t size) {
   return chunk->mem;
 }
 
+void* csg_realloc(void* mem, size_t size) {
+  struct memchunk* chunk;
+  LIST_FOREACH(chunk, &allocations, entries) {
+    if (chunk->mem == mem) {
+      size_t oldsize = chunk->size;
+
+      chunk->mem = realloc(chunk->mem, size);
+      chunk->size = size;
+
+      if (debug)
+        printf("csg_realloc: @%p (%zu -> %zu bytes)\n", chunk, oldsize,
+               chunk->size);
+
+      return chunk->mem;
+    }
+  }
+
+  // chunk that contains 'mem' not found; malloc
+  return csg_malloc(size);
+}
+
 void csg_free(void* mem) {
-  if (LIST_EMPTY(&allocations)) return;
+  //  if (LIST_EMPTY(&allocations)) return;  // XXX
 
   struct memchunk* chunk;
   LIST_FOREACH(chunk, &allocations, entries) {
@@ -75,6 +96,8 @@ void csg_free(void* mem) {
       return;
     }
   }
+  // not found; XXX not ours, so do not free() it
+  return;
 }
 
 void csg_print_malloc_stat(void) {
