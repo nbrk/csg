@@ -98,7 +98,7 @@ static void test2(GLFWwindow* window) {
   csg_drawable_t* draw3 = csg_drawable_create(csg_geometry_create_cube(), red);
   csg_node_set_drawable(node3, draw3);
   csg_node_set_transform(node3, trans3);
-  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_RESTART);
+  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_OSCILLATE);
   csg_transform_set_translation_animation(trans3, anim3);
   csg_animation_add_waypoint(anim3, 3.0f, 0.f, 0.f, 1.f);
   csg_animation_add_waypoint(anim3, 4.0f, 0.f, 0.f, 1.f);
@@ -150,9 +150,16 @@ static void test2(GLFWwindow* window) {
       csg_transform_translation_animation_update(trans3, 0.01f);
       //      csg_animation_update(anim3, 0.01f);
       float x, y, z, w;
-      float interpolant = csg_animation_get_value(anim3, &x, &y, &z, &w);
-      printf("cuurent vec4: %f, %f, %f, %f (interpolant: %f)\n", x, y, z, w,
-             interpolant);
+      int cur_seg, total_segs;
+      float interpolant =
+          csg_animation_get_interpolant(anim3, &total_segs, &cur_seg);
+      csg_animation_get_value(anim3, &x, &y, &z, &w);
+      int flags = csg_animation_get_flags(anim3);
+
+      printf(
+          "cuurent vec4: %f, %f, %f, %f (seg %d/%d, interpolant: %f, flags: "
+          "0x%x)\n",
+          x, y, z, w, cur_seg, total_segs, interpolant, flags);
     }
 
     csg_viewport_render(view, root);

@@ -173,5 +173,8 @@ extern void csg_animation_update(csg_animation_t* anim, float delta);
 extern csg_animation_t* csg_animation_create(csg_animation_mode_e mode);
 extern size_t csg_animation_add_waypoint(csg_animation_t* anim, float x,
                                          float y, float z, float w);
-extern float csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
-                                     float* z, float* w);
+extern void csg_animation_get_value(csg_animation_t* anim, float* x, float* y,
+                                    float* z, float* w);
+extern float csg_animation_get_interpolant(csg_animation_t* anim,
+                                           int* total_segs, int* current_seg);
+extern int csg_animation_get_flags(csg_animation_t* anim);
