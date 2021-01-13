@@ -72,3 +72,13 @@ void csg_transform_get_position(csg_transform_t* trans, float* x, float* y,
   *y = trans->position[1];
   *z = trans->position[2];
 }
+
+void csg_transform_rotate(csg_transform_t* trans, float angle_rad, float x,
+                          float y, float z) {
+  vec3 axis;
+  axis[0] = x;
+  axis[1] = y;
+  axis[2] = z;
+  //  glm_rotate(trans->matrix, angle_rad, axis);
+  glm_rotate_make(trans->matrix, angle_rad, axis);
+}

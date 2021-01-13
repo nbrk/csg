@@ -230,6 +230,7 @@ static void test3(GLFWwindow* window) {
     anims[i] = csg_animation_create(CSG_ANIMATION_MODE_OSCILLATE);
     csg_animation_add_point(anims[i], x, y, z, 1.f);
     csg_animation_add_point(anims[i], x, y, z + (arc4random() % 50), 1.f);
+
     //    csg_animation_add_point(anims[i], x, y, z, 1.f);
     //    csg_animation_add_point(anims[i], x, y, z - (arc4random() % 50), 1.f);
     csg_transform_set_translation_animation(csg_node_get_transform(cubes[i]),
@@ -262,6 +263,14 @@ static void test3(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
       printf("PgDn\n");
       csg_transform_translate(camtrans, 0.0f, 0.0f, -0.1f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+      printf("Q\n");
+      csg_transform_rotate(camtrans, 0.1f, 0.0f, 1.0f, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+      printf("E\n");
+      csg_transform_rotate(camtrans, -0.1f, 0.0f, 1.0f, 0.0f);
     }
 
     //     proceed all animations

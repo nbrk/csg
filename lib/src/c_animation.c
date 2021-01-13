@@ -28,7 +28,7 @@
 #define ANIMATION_FLAG_RUNNING_BACKWARDS 4
 
 void csg_animation_update(csg_animation_t* anim, float delta) {
-  assert(anim->num_waypoints >= 2);
+  if (anim->num_waypoints < 2) return;
   assert(anim->current_segment < anim->total_segments);
 
   // skip everything if 'stopped' or no delta
