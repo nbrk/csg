@@ -53,7 +53,8 @@ static void test1(void) {
 static void test2(GLFWwindow* window) {
   csg_camera_t* cam =
       csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
-  csg_transform_t* camtrans = csg_transform_create(0.0f, 0.0f, -20.0f);
+  csg_transform_t* camtrans =
+      csg_transform_create_translated(-10.0f, 0.0f, -50.0f);
   csg_camera_set_transform(cam, camtrans);
 
   csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
@@ -76,35 +77,35 @@ static void test2(GLFWwindow* window) {
   csg_node_t* root = csg_node_create(NULL, NULL);
   // first object..
   csg_node_t* node = csg_node_create(root, "Bob");
-  csg_transform_t* trans = csg_transform_create(-1.0f, 0.0f, 0.0f);
+  csg_transform_t* trans = csg_transform_create_translated(-1.0f, 0.0f, 0.0f);
   csg_drawable_t* draw = csg_drawable_create(triangle, blue);
   csg_node_set_drawable(node, draw);
   csg_node_set_transform(node, trans);
   // other object..
   csg_node_t* node1 = csg_node_create(root, "Jack");
-  csg_transform_t* trans1 = csg_transform_create(0.0f, 0.0f, 0.0f);
+  csg_transform_t* trans1 = csg_transform_create_translated(0.0f, 0.0f, 0.0f);
   csg_drawable_t* draw1 = csg_drawable_create(triangle, red);
   csg_node_set_drawable(node1, draw1);
   csg_node_set_transform(node1, trans1);
   // other object..
   csg_node_t* node2 = csg_node_create(root, "Jill");
-  csg_transform_t* trans2 = csg_transform_create(1.0f, 0.0f, 0.0f);
+  csg_transform_t* trans2 = csg_transform_create_translated(1.0f, 0.0f, 0.0f);
   csg_drawable_t* draw2 = csg_drawable_create(triangle, green);
   csg_node_set_drawable(node2, draw2);
   csg_node_set_transform(node2, trans2);
   // other object..
   csg_node_t* node3 = csg_node_create(root, NULL);
-  csg_transform_t* trans3 = csg_transform_create(3.0f, 0.0f, 0.0f);
+  csg_transform_t* trans3 = csg_transform_create_translated(3.0f, 0.0f, 0.0f);
   csg_drawable_t* draw3 = csg_drawable_create(csg_geometry_create_cube(), red);
   csg_node_set_drawable(node3, draw3);
   csg_node_set_transform(node3, trans3);
-  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_RESTART);
+  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_OSCILLATE);
   csg_transform_set_translation_animation(trans3, anim3);
   csg_animation_add_point(anim3, 3.0f, 0.f, 0.f, 1.f);
-  csg_animation_add_point(anim3, 4.0f, 0.f, 0.f, 1.f);
-  csg_animation_add_point(anim3, 1.0f, 0.f, 8.f, 1.f);
-  csg_animation_add_point(anim3, 1.0f, 0.f, 0.f, 1.f);
-  csg_animation_add_point(anim3, 3.0f, 0.f, 0.f, 1.f);
+  csg_animation_add_point(anim3, 10.0f, 0.f, 0.f, 1.f);
+  //  csg_animation_add_point(anim3, 1.0f, 0.f, 8.f, 1.f);
+  //  csg_animation_add_point(anim3, 1.0f, 0.f, 0.f, 1.f);
+  //  csg_animation_add_point(anim3, 3.0f, 0.f, 0.f, 1.f);
 
   glfwSetTime(0.0);
   while (glfwWindowShouldClose(window) != GLFW_TRUE) {
@@ -116,11 +117,11 @@ static void test2(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
       printf("A\n");
-      csg_transform_translate(trans1, -0.05f, 0.0f, 0.0f);
+      csg_transform_translate(trans3, -0.05f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
       printf("D\n");
-      csg_transform_translate(trans1, 0.05f, 0.0f, 0.0f);
+      csg_transform_translate(trans3, 0.05f, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
       printf("PgUp\n");
@@ -149,7 +150,7 @@ static void test2(GLFWwindow* window) {
     }
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
       printf("U: ");
-      csg_transform_translation_animation_update(trans3, 0.01f);
+      csg_transform_update_translation_animation(trans3, 0.01f);
       //      csg_animation_update(anim3, 0.01f);
       float x, y, z, w;
       int cur_seg, total_segs;
@@ -164,8 +165,8 @@ static void test2(GLFWwindow* window) {
           x, y, z, w, cur_seg, total_segs, interpolant, flags);
     }
 
-    // update animations each frame
-    csg_transform_translation_animation_update(trans3, 0.01f);
+    //    // update animations each frame
+    //    csg_transform_translation_animation_update(trans3, 0.01f);
 
     csg_viewport_render(view, root);
 
@@ -195,7 +196,7 @@ static csg_node_t* make_cube(csg_node_t* parent, float x, float y, float z) {
   csg_node_t* node = csg_node_create(parent, "Jill");
   csg_drawable_t* draw = csg_drawable_create(cube_geom, mtrl);
   csg_node_set_drawable(node, draw);
-  csg_transform_t* trans = csg_transform_create(x, y, z);
+  csg_transform_t* trans = csg_transform_create_translated(x, y, z);
   csg_node_set_transform(node, trans);
 
   return node;
@@ -211,7 +212,8 @@ static void test3(GLFWwindow* window) {
 
   csg_camera_t* cam =
       csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
-  csg_transform_t* camtrans = csg_transform_create(-7.0f, -4.0f, -20.0f);
+  csg_transform_t* camtrans =
+      csg_transform_create_translated(-7.0f, -5.0f, -40.0f);
   csg_camera_set_transform(cam, camtrans);
 
   csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
@@ -231,8 +233,8 @@ static void test3(GLFWwindow* window) {
     csg_animation_add_point(anims[i], x, y, z, 1.f);
     csg_animation_add_point(anims[i], x, y, z + (arc4random() % 50), 1.f);
 
-    //    csg_animation_add_point(anims[i], x, y, z, 1.f);
-    //    csg_animation_add_point(anims[i], x, y, z - (arc4random() % 50), 1.f);
+    csg_animation_add_point(anims[i], x, y, z, 1.f);
+    csg_animation_add_point(anims[i], x, y, z - (arc4random() % 50), 1.f);
     csg_transform_set_translation_animation(csg_node_get_transform(cubes[i]),
                                             anims[i]);
   }
@@ -264,18 +266,54 @@ static void test3(GLFWwindow* window) {
       printf("PgDn\n");
       csg_transform_translate(camtrans, 0.0f, 0.0f, -0.1f);
     }
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+      printf("Z\n");
+      csg_transform_rotate(camtrans, -0.01f, 0.0f, 1.0f, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+      printf("C\n");
+      csg_transform_rotate(camtrans, 0.01f, 0.0f, 1.0f, 0.0f);
+    }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
       printf("Q\n");
-      csg_transform_rotate(camtrans, 0.1f, 0.0f, 1.0f, 0.0f);
+      //      csg_transform_rotate(camtrans, 0.1f, 0.0f, 1.0f, 0.0f);
+      for (size_t i = 0; i < NCUBES; i++) {
+        csg_transform_rotate(csg_node_get_transform(cubes[i]), 0.1f, 0.0f, 1.f,
+                             0.f);
+      }
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
       printf("E\n");
-      csg_transform_rotate(camtrans, -0.1f, 0.0f, 1.0f, 0.0f);
+      //      csg_transform_rotate(camtrans, -0.1f, 0.0f, 1.0f, 0.0f);
+      for (size_t i = 0; i < NCUBES; i++) {
+        csg_transform_rotate(csg_node_get_transform(cubes[i]), -0.1f, 0.0f, 1.f,
+                             0.f);
+      }
+    }
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+      printf("MINUS\n");
+      //      csg_transform_rotate(camtrans, 0.1f, 0.0f, 1.0f, 0.0f);
+      for (size_t i = 0; i < NCUBES; i++) {
+        csg_transform_scale(csg_node_get_transform(cubes[i]), 0.9f, 1.0f, 1.f);
+      }
+    }
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
+      printf("EQUAL\n");
+      //      csg_transform_rotate(camtrans, -0.1f, 0.0f, 1.0f, 0.0f);
+      for (size_t i = 0; i < NCUBES; i++) {
+        csg_transform_scale(csg_node_get_transform(cubes[i]), 1.1f, 1.0f, 1.f);
+      }
+    }
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+      for (size_t i = 0; i < NCUBES; i++) {
+        csg_transform_update_translation_animation(
+            csg_node_get_transform(cubes[i]), 0.005f);
+      }
     }
 
     //     proceed all animations
     for (size_t i = 0; i < NCUBES; i++) {
-      csg_transform_translation_animation_update(
+      csg_transform_update_translation_animation(
           csg_node_get_transform(cubes[i]), 0.005f);
     }
 
@@ -299,7 +337,7 @@ int main(int argc, char** argv) {
   csg_set_malloc_debug(true);
   csg_init();
 
-  //  test1();
+  //      test1();
   //  test2(window1);
   test3(window1);
 

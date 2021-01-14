@@ -50,15 +50,16 @@ struct csg_node_t {
 };
 
 struct csg_transform_t {
-  mat4 matrix;
   csg_animation_t* translation_animation;
   csg_animation_t* rotation_animation;
-  csg_animation_t* scaling_animation;
+  csg_animation_t* scale_animation;
 
-  // XXX
+  mat4 matrix;
+  mat4 translation_matrix;
+  mat4 rotation_matrix;
+  mat4 scale_matrix;
+
   vec4 position;
-  //  vec4 rotation;
-  //  vec4 scale;
 };
 
 struct csg_geometry_t {

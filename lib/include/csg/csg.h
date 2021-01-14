@@ -139,18 +139,26 @@ extern void csg_node_set_drawable(csg_node_t* node, csg_drawable_t* draw);
 /*
  * Transforms
  */
-extern csg_transform_t* csg_transform_create(float orig_x, float orig_y,
-                                             float orig_z);
+/**
+ * @brief Create transform object with identity matrices
+ * @return
+ */
+extern csg_transform_t* csg_transform_create(void);
+extern csg_transform_t* csg_transform_create_translated(float orig_x,
+                                                        float orig_y,
+                                                        float orig_z);
+extern void csg_transform_get_position(csg_transform_t* trans, float* x,
+                                       float* y, float* z);
+extern void csg_transform_set_translation_animation(csg_transform_t* trans,
+                                                    csg_animation_t* anim);
+extern void csg_transform_update_translation_animation(csg_transform_t* trans,
+                                                       float delta);
 extern void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
                                     float dz);
 extern void csg_transform_rotate(csg_transform_t* trans, float angle_rad,
                                  float x, float y, float z);
-extern void csg_transform_set_translation_animation(csg_transform_t* trans,
-                                                    csg_animation_t* anim);
-extern void csg_transform_translation_animation_update(csg_transform_t* trans,
-                                                       float delta);
-extern void csg_transform_get_position(csg_transform_t* trans, float* x,
-                                       float* y, float* z);
+extern void csg_transform_scale(csg_transform_t* trans, float sx, float sy,
+                                float sz);
 
 /*
  * Geometries

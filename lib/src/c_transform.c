@@ -22,32 +22,51 @@
 
 #include "csg_internal.h"
 
-csg_transform_t* csg_transform_create(float orig_x, float orig_y,
-                                      float orig_z) {
+void calc_matrix(csg_transform_t* trans) {
+  //  glm_mat4_mul(trans->translation_matrix, trans->rotation_matrix,
+  //               trans->matrix);
+  glm_mat4_mulN((mat4*[]){&trans->translation_matrix, &trans->rotation_matrix,
+                          &trans->scale_matrix},
+                3, trans->matrix);
+}
+
+csg_transform_t* csg_transform_create(void) {
   csg_transform_t* trans = csg_malloc(sizeof(*trans));
 
   trans->translation_animation = NULL;
   trans->rotation_animation = NULL;
-  trans->scaling_animation = NULL;
+  trans->scale_animation = NULL;
   glm_mat4_identity(trans->matrix);
-  glm_translate(trans->matrix, (float[]){orig_x, orig_y, orig_z});  // XXX
+  glm_translate_make(trans->translation_matrix, (float[]){0.f, 0.f, 0.f, 1.0f});
+  glm_rotate_make(trans->rotation_matrix, 0.0f, (float[]){0.f, 0.f, 0.f});
+  glm_scale_make(trans->scale_matrix, (float[]){1.0f, 1.0f, 1.0f});
 
-  // XXX
-  trans->position[0] = orig_x;
-  trans->position[1] = orig_y;
-  trans->position[2] = orig_z;
-  trans->position[3] = 1.0f;
+  trans->position[0] = 0.f;
+  trans->position[1] = 0.f;
+  trans->position[2] = 0.f;
+  trans->position[3] = 1.f;
+
+  return trans;
+}
+
+csg_transform_t* csg_transform_create_translated(float orig_x, float orig_y,
+                                                 float orig_z) {
+  csg_transform_t* trans = csg_transform_create();
+  csg_transform_translate(trans, orig_x, orig_y, orig_z);
 
   return trans;
 }
 
 void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
                              float dz) {
-  glm_translate(trans->matrix, (float[]){dx, dy, dz});
-
-  trans->position[0] += dx;
-  trans->position[1] += dy;
-  trans->position[2] += dz;
+  vec4 dv;
+  dv[0] = dx;
+  dv[1] = dy;
+  dv[2] = dz;
+  dv[3] = 1.0f;
+  glm_vec4_add(trans->position, dv, trans->position);
+  glm_translate(trans->translation_matrix, (float[]){dx, dy, dz});
+  calc_matrix(trans);
 }
 
 void csg_transform_set_translation_animation(csg_transform_t* trans,
@@ -55,15 +74,18 @@ void csg_transform_set_translation_animation(csg_transform_t* trans,
   trans->translation_animation = anim;
 }
 
-void csg_transform_translation_animation_update(csg_transform_t* trans,
+void csg_transform_update_translation_animation(csg_transform_t* trans,
                                                 float delta) {
   if (trans->translation_animation == NULL) return;
 
   csg_animation_update(trans->translation_animation, delta);
 
-  //  glm_translate(trans->matrix, trans->translation_animation->current_value);
-  glm_translate_make(trans->matrix,
+  // XXX
+  glm_translate_make(trans->translation_matrix,
                      trans->translation_animation->current_value);
+  glm_translate(trans->translation_matrix, trans->position);
+
+  calc_matrix(trans);
 }
 
 void csg_transform_get_position(csg_transform_t* trans, float* x, float* y,
@@ -79,6 +101,12 @@ void csg_transform_rotate(csg_transform_t* trans, float angle_rad, float x,
   axis[0] = x;
   axis[1] = y;
   axis[2] = z;
-  //  glm_rotate(trans->matrix, angle_rad, axis);
-  glm_rotate_make(trans->matrix, angle_rad, axis);
+  //    glm_rotate(trans->combined_matrix, angle_rad, axis);
+  glm_rotate(trans->rotation_matrix, angle_rad, axis);
+  calc_matrix(trans);
+}
+
+void csg_transform_scale(csg_transform_t* trans, float sx, float sy, float sz) {
+  glm_scale(trans->scale_matrix, (float[]){sx, sy, sz});
+  calc_matrix(trans);
 }
