@@ -21,19 +21,6 @@
  */
 #pragma once
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+extern csg_drawable_t* csg_drawable_create(csg_geometry_t* geom, csg_material_t* mtrl);

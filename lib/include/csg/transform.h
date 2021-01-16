@@ -20,20 +20,17 @@
  * IN THE SOFTWARE.
  */
 #pragma once
-
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+/**
+ * @brief Create transform object with identity matrices
+ * @return
+ */
+extern csg_transform_t* csg_transform_create(void);
+extern csg_transform_t* csg_transform_create_translated(float orig_x, float orig_y, float orig_z);
+extern void csg_transform_get_position(csg_transform_t* trans, float* x, float* y, float* z);
+extern void csg_transform_set_translation_animation(csg_transform_t* trans, csg_animation_t* anim);
+extern void csg_transform_update_translation_animation(csg_transform_t* trans, float delta);
+extern void csg_transform_translate(csg_transform_t* trans, float dx, float dy, float dz);
+extern void csg_transform_rotate(csg_transform_t* trans, float angle_rad, float x, float y, float z);
+extern void csg_transform_scale(csg_transform_t* trans, float sx, float sy, float sz);

@@ -21,19 +21,7 @@
  */
 #pragma once
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+extern csg_material_t* csg_material_create(void);
+extern void csg_material_set_color(csg_material_t* mtrl, csg_material_color_e type, float r, float g, float b, float a);

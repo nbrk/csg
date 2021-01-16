@@ -21,19 +21,13 @@
  */
 #pragma once
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+#include <stdlib.h>
+
+extern void csg_animation_update(csg_animation_t* anim, float delta);
+extern csg_animation_t* csg_animation_create(csg_animation_mode_e mode);
+extern size_t csg_animation_add_point(csg_animation_t* anim, float x, float y, float z, float w);
+extern void csg_animation_get_value(csg_animation_t* anim, float* x, float* y, float* z, float* w);
+extern float csg_animation_get_interpolant(csg_animation_t* anim, int* total_segs, int* current_seg);
+extern int csg_animation_get_flags(csg_animation_t* anim);

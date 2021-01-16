@@ -20,20 +20,12 @@
  * IN THE SOFTWARE.
  */
 #pragma once
+#include <stdlib.h>
+#include <stdbool.h>
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
-#include <csg/types.h>
-
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+extern void csg_init(void);
+extern void* csg_malloc(size_t size);
+extern void csg_free(void* mem);
+extern void* csg_realloc(void* mem, size_t size);
+extern void csg_set_malloc_debug(bool val);
+extern void csg_print_malloc_stat(void);

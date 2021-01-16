@@ -21,19 +21,21 @@
  */
 #pragma once
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+#include <stdlib.h>
+
+/**
+ * @brief Create a new root node or a child node
+ * @param parent pointer to a parent node or NULL if the node is a root
+ * @return
+ */
+extern csg_node_t* csg_node_create(csg_node_t* parent, void* cookie);
+extern void csg_node_destroy_recursively(csg_node_t* node);
+extern void csg_node_apply_depth_first(csg_node_t* node, void (*func)(csg_node_t*, void*), void* func_cookie);
+extern void* csg_node_get_cookie(csg_node_t* node);
+extern csg_node_t** csg_node_get_children(csg_node_t* node, size_t* num_children);
+extern csg_node_t* csg_node_get_parent(csg_node_t* node);
+extern void csg_node_set_transform(csg_node_t* node, csg_transform_t* trans);
+extern csg_transform_t* csg_node_get_transform(csg_node_t* node);
+extern void csg_node_set_drawable(csg_node_t* node, csg_drawable_t* draw);

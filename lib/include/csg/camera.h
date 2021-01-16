@@ -21,19 +21,7 @@
  */
 #pragma once
 
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+extern csg_camera_t* csg_camera_create(csg_camera_projection_e proj, float aspect);
+extern void csg_camera_set_transform(csg_camera_t* cam, csg_transform_t* trans);

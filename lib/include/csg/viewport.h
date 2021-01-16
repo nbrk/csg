@@ -20,20 +20,15 @@
  * IN THE SOFTWARE.
  */
 #pragma once
-
-/*
- *
- * C Scene Graph library public API.
- *
- */
 #include <csg/types.h>
 
-#include <csg/animation.h>
-#include <csg/camera.h>
-#include <csg/drawable.h>
-#include <csg/geometry.h>
-#include <csg/material.h>
-#include <csg/node.h>
-#include <csg/transform.h>
-#include <csg/util.h>
-#include <csg/viewport.h>
+extern csg_viewport_t* csg_viewport_create(int x, int y, int width, int height, csg_camera_t* cam);
+extern void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width, int height);
+extern void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g, float b, float a);
+/**
+ * @brief Render subtree headed by a node
+ * @param view
+ * @param root subtree to draw
+ */
+extern void csg_viewport_render(csg_viewport_t* view, csg_node_t* root);
+extern csg_camera_t* csg_viewport_get_camera(csg_viewport_t* view);
