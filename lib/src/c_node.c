@@ -30,8 +30,7 @@ csg_node_t* csg_node_create(csg_node_t* parent, void* cookie) {
   node->children = NULL;
   node->num_children = 0;
   node->cookie = cookie;
-  //  node->transform = csg_transform_create(0.0f, 0.0f, 0.0f);
-  node->transform = NULL;
+  node->transform = csg_transform_create();
   node->drawable = NULL;
 
   if (parent != NULL) {
@@ -57,14 +56,18 @@ void csg_node_apply_depth_first(csg_node_t* node,
   }
 }
 
-void* csg_node_get_cookie(csg_node_t* node) { return node->cookie; }
+void* csg_node_get_cookie(csg_node_t* node) {
+  return node->cookie;
+}
 
 csg_node_t** csg_node_get_children(csg_node_t* node, size_t* num_children) {
   *num_children = node->num_children;
   return node->children;
 }
 
-csg_node_t* csg_node_get_parent(csg_node_t* node) { return node->parent; }
+csg_node_t* csg_node_get_parent(csg_node_t* node) {
+  return node->parent;
+}
 
 void csg_node_set_transform(csg_node_t* node, csg_transform_t* trans) {
   node->transform = trans;

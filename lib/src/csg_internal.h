@@ -34,9 +34,16 @@ struct csg_viewport_t {
 };
 
 struct csg_camera_t {
+  csg_camera_projection_e projection;
+  float aspect;
+
+  vec3 position;
+  //  vec3 direction;
+  vec3 center;
+  vec3 up;
+
   mat4 view_matrix;
   mat4 projection_matrix;
-  csg_transform_t* transform;
 };
 
 struct csg_node_t {
@@ -91,5 +98,7 @@ struct csg_animation_t {
   int flags;
 };
 
-extern void drawable_draw(csg_drawable_t* draw, mat4 model_matrix,
-                          mat4 view_matrix, mat4 projection_matrix);
+extern void drawable_draw(csg_drawable_t* draw,
+                          mat4 model_matrix,
+                          mat4 view_matrix,
+                          mat4 projection_matrix);

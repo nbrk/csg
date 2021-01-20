@@ -24,14 +24,11 @@
 
 #include "csg_internal.h"
 
-csg_viewport_t* csg_viewport_create(int x, int y, int width, int height,
-                                    csg_camera_t* cam) {
-  if (cam == NULL) return NULL;
-
+csg_viewport_t* csg_viewport_create(int x, int y, int width, int height) {
   csg_viewport_t* view = csg_malloc(sizeof(*view));
 
   csg_viewport_reset(view, x, y, width, height);
-  view->camera = cam;
+  view->camera = csg_camera_create((float)width / (float)height);
   view->clear_color[0] = 0.0f;
   view->clear_color[1] = 0.0f;
   view->clear_color[2] = 0.0f;
@@ -40,15 +37,19 @@ csg_viewport_t* csg_viewport_create(int x, int y, int width, int height,
   return view;
 }
 
-void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g,
-                                  float b, float a) {
+void csg_viewport_set_clear_color(csg_viewport_t* view,
+                                  float r,
+                                  float g,
+                                  float b,
+                                  float a) {
   view->clear_color[0] = r;
   view->clear_color[1] = g;
   view->clear_color[2] = b;
   view->clear_color[3] = a;
 }
 
-static void render_forest(csg_node_t* node, mat4 view_matrix,
+static void render_forest(csg_node_t* node,
+                          mat4 view_matrix,
                           mat4 projection_matrix) {
   // incorporate transform; if no transform is set, consider the identity mat
   mat4 model_matrix;
@@ -79,18 +80,25 @@ void csg_viewport_render(csg_viewport_t* view, csg_node_t* root) {
                view->clear_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  if (root == NULL) return;
+  if (root == NULL)
+    return;
 
   // apply the camera's model matrix, if any
-  mat4 camera_model_matrix = GLM_MAT4_IDENTITY_INIT;
-  if (view->camera->transform != NULL)
-    glm_mat4_mul(view->camera->transform->matrix, view->camera->view_matrix,
-                 camera_model_matrix);
+  //  mat4 camera_matrix = GLM_MAT4_IDENTITY_INIT;
+  //  if (view->camera->transform != NULL)
+  //    glm_mat4_mul(view->camera->transform->matrix, view->camera->view_matrix,
+  //                 camera_model_matrix);
+  //  glm_mat4_mul(view->camera->view_matrix, view->camera->projection_matrix,
+  //               camera_matrix);
 
-  render_forest(root, camera_model_matrix, view->camera->projection_matrix);
+  render_forest(root, view->camera->view_matrix,
+                view->camera->projection_matrix);
 }
 
-void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width,
+void csg_viewport_reset(csg_viewport_t* view,
+                        int x,
+                        int y,
+                        int width,
                         int height) {
   glViewport(x, y, width, height);
   view->x = x;

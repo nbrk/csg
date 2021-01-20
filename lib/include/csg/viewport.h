@@ -22,13 +22,33 @@
 #pragma once
 #include <csg/types.h>
 
-extern csg_viewport_t* csg_viewport_create(int x, int y, int width, int height, csg_camera_t* cam);
+/**
+ * @brief Create a viewport in the active OpenGL context
+ * @param x
+ * @param y
+ * @param width
+ * @param height
+ * @param cam
+ * @return
+ */
+extern csg_viewport_t* csg_viewport_create(int x, int y, int width, int height);
+
+/**
+ * @brief Reset viewport dimensions
+ * @param view
+ * @param x
+ * @param y
+ * @param width
+ * @param height
+ */
 extern void csg_viewport_reset(csg_viewport_t* view, int x, int y, int width, int height);
-extern void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g, float b, float a);
+
 /**
  * @brief Render subtree headed by a node
  * @param view
  * @param root subtree to draw
  */
 extern void csg_viewport_render(csg_viewport_t* view, csg_node_t* root);
+
+extern void csg_viewport_set_clear_color(csg_viewport_t* view, float r, float g, float b, float a);
 extern csg_camera_t* csg_viewport_get_camera(csg_viewport_t* view);

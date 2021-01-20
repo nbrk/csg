@@ -30,7 +30,8 @@ void print_node(csg_node_t* node, void* cookie) {
     indent_level++;
     child = csg_node_get_parent(child);
   }
-  for (size_t i = 0; i < indent_level; i++) putchar(' ');
+  for (size_t i = 0; i < indent_level; i++)
+    putchar(' ');
 
   printf("Node @%p, cookie: %d\n", node, csg_node_get_cookie(node));
 }
@@ -51,13 +52,13 @@ static void test1(void) {
 }
 
 static void test2(GLFWwindow* window) {
-  csg_camera_t* cam =
-      csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
+  //  csg_camera_t* cam =
+  //      csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
   csg_transform_t* camtrans =
       csg_transform_create_translated(-10.0f, 0.0f, -50.0f);
-  csg_camera_set_transform(cam, camtrans);
+  //  csg_camera_set_transform(cam, camtrans);
 
-  csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
+  csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768);
   csg_viewport_set_clear_color(view, 0.0f, 0.1f, 0.0f, 1.0f);
 
   csg_material_t* blue = csg_material_create();
@@ -99,7 +100,7 @@ static void test2(GLFWwindow* window) {
   csg_drawable_t* draw3 = csg_drawable_create(csg_geometry_create_cube(), red);
   csg_node_set_drawable(node3, draw3);
   csg_node_set_transform(node3, trans3);
-  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_OSCILLATE);
+  csg_animation_t* anim3 = csg_animation_create(CSG_ANIMATION_MODE_ONESHOT);
   csg_transform_set_translation_animation(trans3, anim3);
   csg_animation_add_point(anim3, 3.0f, 0.f, 0.f, 1.f);
   csg_animation_add_point(anim3, 10.0f, 0.f, 0.f, 1.f);
@@ -166,7 +167,7 @@ static void test2(GLFWwindow* window) {
     }
 
     //    // update animations each frame
-    //    csg_transform_translation_animation_update(trans3, 0.01f);
+    //       csg_transform_translation_animation_update(trans3, 0.01f);
 
     csg_viewport_render(view, root);
 
@@ -176,7 +177,8 @@ static void test2(GLFWwindow* window) {
 
 static csg_node_t* make_cube(csg_node_t* parent, float x, float y, float z) {
   static csg_geometry_t* cube_geom = NULL;
-  if (cube_geom == NULL) cube_geom = csg_geometry_create_cube();
+  if (cube_geom == NULL)
+    cube_geom = csg_geometry_create_cube();
 
   srand(arc4random());
 
@@ -203,21 +205,10 @@ static csg_node_t* make_cube(csg_node_t* parent, float x, float y, float z) {
 }
 
 static void test3(GLFWwindow* window) {
-  // XXX what's wrong with this code???:
-  //  csg_viewport_t* view = csg_viewport_create(
-  //      0, 0, 1024, 768,
-  //      csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3));
-  //  csg_camera_set_transform(csg_viewport_get_camera(view),
-  //                           csg_transform_create(0.f, 0.f, 10.0f));
-
-  csg_camera_t* cam =
-      csg_camera_create(CSG_CAMERA_PROJECTION_PERSPECTIVE, 4 / 3);
-  csg_transform_t* camtrans =
-      csg_transform_create_translated(-7.0f, -5.0f, -40.0f);
-  csg_camera_set_transform(cam, camtrans);
-
-  csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768, cam);
+  csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768);
   csg_viewport_set_clear_color(view, 0.0f, 0.0f, 0.1f, 1.0f);
+  csg_camera_set_position(csg_viewport_get_camera(view), 10.0f, 10.f, 50.f,
+                          false);
 
   csg_node_t* root = csg_node_create(NULL, NULL);
 #define NCUBES 64
@@ -225,7 +216,8 @@ static void test3(GLFWwindow* window) {
   csg_animation_t* anims[NCUBES];
   for (size_t i = 0; i < NCUBES; i++) {
     static float row = 0;
-    if (i % 8 == 0) row++;
+    if (i % 8 == 0)
+      row++;
     cubes[i] = make_cube(root, (i * 2) % (8 * 2), 2 * row, 0.f);
     float x, y, z;
     csg_transform_get_position(csg_node_get_transform(cubes[i]), &x, &y, &z);
@@ -244,35 +236,67 @@ static void test3(GLFWwindow* window) {
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
       printf("Left\n");
-      csg_transform_translate(camtrans, 0.1f, 0.0f, 0.0f);
+      //      csg_transform_translate(camtrans, 0.1f, 0.0f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x - 0.1f, y, z,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
       printf("Right\n");
-      csg_transform_translate(camtrans, -0.1f, 0.0f, 0.0f);
+      //      csg_transform_translate(camtrans, -0.1f, 0.0f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x + 0.1f, y, z,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
       printf("Up\n");
-      csg_transform_translate(camtrans, 0.0f, -0.1f, 0.0f);
+      //      csg_transform_translate(camtrans, 0.0f, -0.1f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x, y + 0.1f, z,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
       printf("Down\n");
-      csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
+      //      csg_transform_translate(camtrans, 0.0f, 0.1f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x, y - 0.1f, z,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
       printf("PgUp\n");
-      csg_transform_translate(camtrans, 0.0f, 0.0f, 0.1f);
+      //      csg_transform_translate(camtrans, 0.0f, 0.0f, 0.1f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x, y, z - 0.1f,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
       printf("PgDn\n");
-      csg_transform_translate(camtrans, 0.0f, 0.0f, -0.1f);
+      //      csg_transform_translate(camtrans, 0.0f, 0.0f, -0.1f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x, y, z + 0.1f,
+                              false);
     }
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
       printf("Z\n");
-      csg_transform_rotate(camtrans, -0.01f, 0.0f, 1.0f, 0.0f);
+      //      csg_transform_rotate(camtrans, -0.01f, 0.0f, 1.0f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x - 0.1f, y,
+                              z - 0.1f, true);
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
       printf("C\n");
-      csg_transform_rotate(camtrans, 0.01f, 0.0f, 1.0f, 0.0f);
+      //      csg_transform_rotate(camtrans, 0.01f, 0.0f, 1.0f, 0.0f);
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x + 0.1f, y,
+                              z - 0.1f, true);
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
       printf("Q\n");
@@ -311,10 +335,77 @@ static void test3(GLFWwindow* window) {
       }
     }
 
-    //     proceed all animations
+    //     process all animations
     for (size_t i = 0; i < NCUBES; i++) {
       csg_transform_update_translation_animation(
           csg_node_get_transform(cubes[i]), 0.005f);
+    }
+
+    csg_viewport_render(view, root);
+
+    glfwSwapBuffers(window);
+  }
+}
+
+static void test4(GLFWwindow* window) {
+  csg_viewport_t* view = csg_viewport_create(0, 0, 1024, 768);
+
+  csg_node_t* root = csg_node_create(NULL, NULL);
+
+  for (int i = 0; i < 4; i++) {
+    csg_node_t* cube = csg_node_create(root, NULL);
+    csg_node_set_drawable(cube, csg_drawable_create(csg_geometry_create_cube(),
+                                                    csg_material_create()));
+    csg_transform_translate(csg_node_get_transform(cube), rand() % 20 + 3.f,
+                            0.f, 0.f);
+  }
+
+  while (glfwWindowShouldClose(window) != GLFW_TRUE) {
+    glfwPollEvents();
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+      printf("A, ");
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x - 0.1f, y, z,
+                              false);
+      float cx, cy, cz;
+      csg_camera_get_center(csg_viewport_get_camera(view), &cx, &cy, &cz);
+      printf("Camera pos: (%.3f, %.3f, %.3f), center: (%.3f, %.3f, %.3f)\n", x,
+             y, z, cx, cy, cz);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+      printf("D, ");
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x + 0.1f, y, z,
+                              false);
+      float cx, cy, cz;
+      csg_camera_get_center(csg_viewport_get_camera(view), &cx, &cy, &cz);
+      printf("Camera pos: (%.3f, %.3f, %.3f), center: (%.3f, %.3f, %.3f)\n", x,
+             y, z, cx, cy, cz);
+    }
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+      printf("Z, ");
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x - 0.1f, y, z,
+                              true);
+      float cx, cy, cz;
+      csg_camera_get_center(csg_viewport_get_camera(view), &cx, &cy, &cz);
+      printf("Camera pos: (%.3f, %.3f, %.3f), center: (%.3f, %.3f, %.3f)\n", x,
+             y, z, cx, cy, cz);
+    }
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+      printf("C, ");
+      float x, y, z;
+      csg_camera_get_position(csg_viewport_get_camera(view), &x, &y, &z);
+      csg_camera_set_position(csg_viewport_get_camera(view), x + 0.1f, y, z,
+                              true);
+      float cx, cy, cz;
+      csg_camera_get_center(csg_viewport_get_camera(view), &cx, &cy, &cz);
+      printf("Camera pos: (%.3f, %.3f, %.3f), center: (%.3f, %.3f, %.3f)\n", x,
+             y, z, cx, cy, cz);
     }
 
     csg_viewport_render(view, root);
@@ -340,6 +431,7 @@ int main(int argc, char** argv) {
   //      test1();
   //  test2(window1);
   test3(window1);
+  //  test4(window1);
 
   glfwDestroyWindow(window1);
   glfwTerminate();
