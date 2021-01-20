@@ -27,4 +27,5 @@ void csg_init(void) {
   glewExperimental = GL_TRUE;
   glewInit();
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
 }

@@ -22,7 +22,7 @@
 
 #include "csg_internal.h"
 
-void calc_matrix(csg_transform_t* trans) {
+static void calc_matrix(csg_transform_t* trans) {
   //  glm_mat4_mul(trans->translation_matrix, trans->rotation_matrix,
   //               trans->matrix);
   glm_mat4_mulN((mat4*[]){&trans->translation_matrix, &trans->rotation_matrix,
@@ -49,7 +49,8 @@ csg_transform_t* csg_transform_create(void) {
   return trans;
 }
 
-csg_transform_t* csg_transform_create_translated(float orig_x, float orig_y,
+csg_transform_t* csg_transform_create_translated(float orig_x,
+                                                 float orig_y,
                                                  float orig_z) {
   csg_transform_t* trans = csg_transform_create();
   csg_transform_translate(trans, orig_x, orig_y, orig_z);
@@ -57,7 +58,9 @@ csg_transform_t* csg_transform_create_translated(float orig_x, float orig_y,
   return trans;
 }
 
-void csg_transform_translate(csg_transform_t* trans, float dx, float dy,
+void csg_transform_translate(csg_transform_t* trans,
+                             float dx,
+                             float dy,
                              float dz) {
   vec4 dv;
   dv[0] = dx;
@@ -76,7 +79,8 @@ void csg_transform_set_translation_animation(csg_transform_t* trans,
 
 void csg_transform_update_translation_animation(csg_transform_t* trans,
                                                 float delta) {
-  if (trans->translation_animation == NULL) return;
+  if (trans->translation_animation == NULL)
+    return;
 
   csg_animation_update(trans->translation_animation, delta);
 
@@ -88,15 +92,31 @@ void csg_transform_update_translation_animation(csg_transform_t* trans,
   calc_matrix(trans);
 }
 
-void csg_transform_get_position(csg_transform_t* trans, float* x, float* y,
+void csg_transform_set_position(csg_transform_t* trans,
+                                float x,
+                                float y,
+                                float z) {
+  trans->position[0] = x;
+  trans->position[1] = y;
+  trans->position[2] = z;
+  glm_translate_make(trans->translation_matrix, (float[]){x, y, z, 1.0f});
+  calc_matrix(trans);
+}
+
+void csg_transform_get_position(csg_transform_t* trans,
+                                float* x,
+                                float* y,
                                 float* z) {
   *x = trans->position[0];
   *y = trans->position[1];
   *z = trans->position[2];
 }
 
-void csg_transform_rotate(csg_transform_t* trans, float angle_rad, float x,
-                          float y, float z) {
+void csg_transform_rotate(csg_transform_t* trans,
+                          float angle_rad,
+                          float x,
+                          float y,
+                          float z) {
   vec3 axis;
   axis[0] = x;
   axis[1] = y;
