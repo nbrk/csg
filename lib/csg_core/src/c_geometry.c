@@ -20,17 +20,17 @@
  * IN THE SOFTWARE.
  */
 #include <GL/glew.h>
-
-#include "csg_internal.h"
+#include <csg/core.h>
 
 csg_geometry_t* csg_geometry_create_triangle(void) {
   csg_geometry_t* geom = csg_malloc(sizeof(*geom));
 
   geom->num_vertices = 3;
-  geom->draw_mode = GL_TRIANGLES;
+  geom->gl_draw_mode = GL_TRIANGLES;
+  geom->gl_indexed_drawing = false;
 
-  glGenVertexArrays(1, &geom->vao);
-  glBindVertexArray(geom->vao);
+  glGenVertexArrays(1, &geom->gl_vao);
+  glBindVertexArray(geom->gl_vao);
   GLuint position_vbo;
   glGenBuffers(1, &position_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
@@ -40,7 +40,6 @@ csg_geometry_t* csg_geometry_create_triangle(void) {
       GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(0);
-  //  glDeleteBuffers(1, &position_vbo);
   glBindVertexArray(0);
 
   return geom;
@@ -50,11 +49,11 @@ csg_geometry_t* csg_geometry_create_cube(void) {
   csg_geometry_t* geom = csg_malloc(sizeof(*geom));
 
   geom->num_vertices = 36;  // XXX
-  geom->draw_mode = GL_TRIANGLES;
-  geom->indexed_drawing = true;
+  geom->gl_draw_mode = GL_TRIANGLES;
+  geom->gl_indexed_drawing = true;
 
-  glGenVertexArrays(1, &geom->vao);
-  glBindVertexArray(geom->vao);
+  glGenVertexArrays(1, &geom->gl_vao);
+  glBindVertexArray(geom->gl_vao);
   GLuint position_vbo;
   glGenBuffers(1, &position_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
