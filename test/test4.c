@@ -23,15 +23,14 @@
 #include <GL/glew.h>
 #include <csg/core.h>
 #include <csg/gui.h>
+#include <csg/gui_glfw3.h>
 #include <stdio.h>
 
 #include "test4_ui.h"
 
-extern csg_gui_adapter_ops_t glfw3_adapter_ops;
-
 int main(int argc, char** argv) {
   csg_gui_adapter_t adapter =
-      csg_gui_adapter_create(glfw3_adapter_ops, 1024, 768, 0);
+      csg_gui_adapter_create(csg_gui_glfw3_adapter_ops(), 1024, 768, 0);
 
   struct nk_glfw* ui = ui_init(adapter.cookie);
   struct ui_cookie cookie;
