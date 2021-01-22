@@ -72,15 +72,13 @@ static void render_node(csg_node_t* node, csg_mat4_t projection,
 
 void csg_render(csg_node_t* root, csg_camera_t* camera,
                 csg_vec4_t clear_color) {
-  assert(root != NULL);
-  assert(camera != NULL);
-
   glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  csg_mat4_t projection = csg_camera_calc_projection_matrix(camera);
-  csg_mat4_t view = csg_camera_calc_view_matrix(camera);
-  csg_mat4_t model = csg_mat4_identity();
-
-  render_node(root, projection, view, model);
+  if (camera != NULL && root != NULL) {
+    csg_mat4_t projection = csg_camera_calc_projection_matrix(camera);
+    csg_mat4_t view = csg_camera_calc_view_matrix(camera);
+    csg_mat4_t model = csg_mat4_identity();
+    render_node(root, projection, view, model);
+  }
 }
