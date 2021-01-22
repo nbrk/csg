@@ -19,45 +19,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+#pragma once
 
-#include <GL/glew.h>
 #include <csg/core.h>
-#include <csg/gui.h>
-#include <stdio.h>
+#include "nuklear.h"
 
-#include "test4_ui.h"
+struct ui_cookie {
+  csg_vec4_t clear_color;
+  csg_node_t* root;
+};
 
-extern csg_gui_adapter_ops_t glfw3_adapter_ops;
-
-int main(int argc, char** argv) {
-  csg_gui_adapter_t adapter =
-      csg_gui_adapter_create(glfw3_adapter_ops, 1024, 768, 0);
-
-  struct nk_glfw* ui = ui_init(adapter.cookie);
-  struct ui_cookie cookie;
-
-  // nodes
-  csg_node_t* node = csg_node_create(NULL, NULL);
-  adapter.ops.begin_frame_func(&adapter);
-  node->geometry = csg_geometry_create_cube();
-  node->geometry->material = csg_material_create();
-
-  // ui cookie
-  cookie.clear_color = (csg_vec4_t){0.20f, 0.0f, 0.0f, 1.0f};
-
-  while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
-    csg_gui_adapter_update(&adapter);
-
-    if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
-      adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
-
-    ui_update(ui, &cookie);
-
-    csg_gui_adapter_begin_frame(&adapter);
-    csg_render(node, csg_camera_default(), cookie.clear_color);
-    ui_draw(ui);
-    csg_gui_adapter_end_frame(&adapter);
-  }
-
-  return 0;
-}
+extern struct nk_glfw* ui_init(void* glfwwindow);
+extern void ui_draw(struct nk_glfw* nk_glfw);
+extern void ui_update(struct nk_glfw* nk_glfw, void* cookie);
