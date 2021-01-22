@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include <csg/nuklear.h>
 #include <stdbool.h>
 
 /*
@@ -197,11 +198,15 @@ struct csg_gui_adapter_ops_t {
 };
 
 struct csg_gui_adapter_t {
-  void* cookie;
+  void* backend_cookie;
+  void* ui_cookie;
   int flags;
 
   // adapter backend (adaptee) ops
   csg_gui_adapter_ops_t ops;
+
+  // backend-agnostic ui state
+  struct nk_context* nk;
 
   // viewport state
   int screen_width;

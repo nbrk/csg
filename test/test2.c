@@ -22,11 +22,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <csg/core.h>
+#include <csg/gui_glfw3.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "nuklear.h"
 
 static void test2(GLFWwindow* window) {
   struct nk_glfw* glfw = malloc(sizeof(*glfw));

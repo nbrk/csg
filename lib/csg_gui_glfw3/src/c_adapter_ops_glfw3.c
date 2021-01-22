@@ -22,13 +22,15 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <csg/core.h>
 #include <csg/gui.h>
+#include <csg/gui_glfw3.h>
 #include <stdio.h>
 
 static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   glfwPollEvents();
 
-  GLFWwindow* window = adapter->cookie;
+  GLFWwindow* window = adapter->backend_cookie;
   if (glfwWindowShouldClose(window) == GLFW_TRUE) {
     adapter->flags |= CSG_GUI_FLAG_WANT_CLOSE;
   }
@@ -67,16 +69,24 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   adapter->mouse_y = (int)y;
 }
 static void glfw_adapter_begin_frame(csg_gui_adapter_t* adapter) {
-  glfwMakeContextCurrent(adapter->cookie);
+  glfwMakeContextCurrent(adapter->backend_cookie);
   // no ther preps to draw...
+
+  nk_glfw3_new_frame(adapter->ui_cookie);
 }
 
 static void glfw_adapter_end_frame(csg_gui_adapter_t* adapter) {
-  glfwSwapBuffers(adapter->cookie);
+  nk_glfw3_render(adapter->ui_cookie, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER,
+                  MAX_ELEMENT_BUFFER);
+
+  // TODO: restore GL state to ours after the Nuklear
+  glEnable(GL_DEPTH_TEST);
+
+  glfwSwapBuffers(adapter->backend_cookie);
 }
 
 static void glfw_adapter_destroy(csg_gui_adapter_t* adapter) {
-  glfwDestroyWindow(adapter->cookie);
+  glfwDestroyWindow(adapter->backend_cookie);
 }
 
 static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
@@ -85,7 +95,7 @@ static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-  GLFWwindow* window1 = NULL;
+  GLFWwindow* window = NULL;
   bool fullscreen = flags != 0 ? true : false;
 
   if (fullscreen) {
@@ -93,23 +103,33 @@ static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
     width = mode->width;
     height = mode->height;
   }
-  window1 = glfwCreateWindow(width, height, "GLFW",
-                             fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
-  glfwMakeContextCurrent(window1);
-  glfwSetInputMode(window1, GLFW_STICKY_KEYS, GLFW_TRUE);
+  window = glfwCreateWindow(width, height, "GLFW",
+                            fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+  glfwMakeContextCurrent(window);
+  glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSwapInterval(1);
 
   glewExperimental = GL_TRUE;
   glewInit();
 
   csg_gui_adapter_t adapter;
-  adapter.cookie = window1;
+  adapter.backend_cookie = window;
   adapter.flags = CSG_GUI_FLAG_FULLSCREEN | CSG_GUI_FLAG_RUNNING;
   adapter.mouse_x = 0;
   adapter.mouse_y = 0;
   adapter.screen_width = width;
   adapter.screen_height = height;
-  // no need to set the backend ops (will be set by csg_adapter_create() )
+
+  // NOTE: no need to set the backend ops (will be set by csg_adapter_create() )
+
+  // create default UI/Nuklear context and set up the UI cookie
+  struct nk_glfw* nk_glfw = csg_malloc(sizeof(*nk_glfw));
+  nk_glfw3_init(nk_glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
+  struct nk_font_atlas* atlas;
+  nk_glfw3_font_stash_begin(nk_glfw, &atlas);
+  nk_glfw3_font_stash_end(nk_glfw);
+  adapter.ui_cookie = nk_glfw;
+  adapter.nk = &nk_glfw->ctx;
 
   return adapter;
 }

@@ -20,7 +20,6 @@
  * IN THE SOFTWARE.
  */
 #pragma once
-
 #include <csg/gui.h>
 #include <csg/nuklear.h>
 #include <csg/nuklear_glfw_gl3.h>

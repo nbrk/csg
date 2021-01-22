@@ -28,7 +28,7 @@
 static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   glfwPollEvents();
 
-  GLFWwindow* window = adapter->cookie;
+  GLFWwindow* window = adapter->backend_cookie;
   if (glfwWindowShouldClose(window) == GLFW_TRUE) {
     adapter->flags |= CSG_GUI_FLAG_WANT_CLOSE;
   }
@@ -67,16 +67,16 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   adapter->mouse_y = (int)y;
 }
 static void glfw_adapter_begin_frame(csg_gui_adapter_t* adapter) {
-  glfwMakeContextCurrent(adapter->cookie);
+  glfwMakeContextCurrent(adapter->backend_cookie);
   // no ther preps to draw...
 }
 
 static void glfw_adapter_end_frame(csg_gui_adapter_t* adapter) {
-  glfwSwapBuffers(adapter->cookie);
+  glfwSwapBuffers(adapter->backend_cookie);
 }
 
 static void glfw_adapter_destroy(csg_gui_adapter_t* adapter) {
-  glfwDestroyWindow(adapter->cookie);
+  glfwDestroyWindow(adapter->backend_cookie);
 }
 
 static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
@@ -103,7 +103,7 @@ static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
   glewInit();
 
   csg_gui_adapter_t adapter;
-  adapter.cookie = window1;
+  adapter.backend_cookie = window1;
   adapter.flags = CSG_GUI_FLAG_FULLSCREEN | CSG_GUI_FLAG_RUNNING;
   adapter.mouse_x = 0;
   adapter.mouse_y = 0;
