@@ -122,10 +122,16 @@ extern csg_mat4_t csg_transform_calc_model_matrix(csg_transform_t* transform);
 extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
                                       csg_vec3_t position, csg_vec3_t target,
                                       csg_vec3_t up, float aspect);
-extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t* camera);
-extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t* camera);
+/**
+ * @brief Create the default camera: positioned at +10 (Z), looking at the
+ * origin, perspective, aspect 4:3
+ * @return
+ */
+extern csg_camera_t csg_camera_default(void);
+extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera);
+extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera);
 
-extern void csg_render(csg_node_t* root, csg_camera_t* camera,
+extern void csg_render(csg_node_t* root, csg_camera_t camera,
                        csg_vec4_t clear_color);
 
 extern csg_geometry_t* csg_geometry_create_triangle(void);

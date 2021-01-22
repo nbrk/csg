@@ -39,18 +39,24 @@ csg_camera_t csg_camera_create(csg_projection_mode_e projection,
   return camera;
 }
 
-csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t* camera) {
+csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera) {
   mat4s m;
-  if (camera->projection == CSG_PROJECTION_PERSPECTIVE)
-    m = glms_perspective_default(camera->aspect);
-  if (camera->projection == CSG_PROJECTION_ORTHOGRAPHIC)
-    m = glms_ortho_default(camera->aspect);
+  if (camera.projection == CSG_PROJECTION_PERSPECTIVE)
+    m = glms_perspective_default(camera.aspect);
+  if (camera.projection == CSG_PROJECTION_ORTHOGRAPHIC)
+    m = glms_ortho_default(camera.aspect);
   return *(csg_mat4_t*)&m;
 }
 
-csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t* camera) {
+csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera) {
   mat4s m;
-  m = glms_lookat(*(vec3s*)&camera->position, *(vec3s*)&camera->target,
-                  *(vec3s*)&camera->up);
+  m = glms_lookat(*(vec3s*)&camera.position, *(vec3s*)&camera.target,
+                  *(vec3s*)&camera.up);
   return *(csg_mat4_t*)&m;
+}
+
+csg_camera_t csg_camera_default(void) {
+  return csg_camera_create(
+      CSG_PROJECTION_PERSPECTIVE, (csg_vec3_t){0.f, 0.f, 10.f},
+      (csg_vec3_t){0.f, 0.f, 0.f}, (csg_vec3_t){0.f, 1.f, 0.f}, 4.0f / 3.0f);
 }

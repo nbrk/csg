@@ -83,7 +83,7 @@ static void test2(GLFWwindow* window) {
     //      csg_transform_translate(trans3, 0.0f, 0.0f, -0.1f);
     //    }
 
-    csg_render(root, &camera, clear_color);
+    csg_render(root, camera, clear_color);
 
     // UI
     nk_glfw3_new_frame(glfw);
