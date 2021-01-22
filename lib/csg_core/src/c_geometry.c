@@ -26,21 +26,17 @@ csg_geometry_t* csg_geometry_create_triangle(void) {
   csg_geometry_t* geom = csg_malloc(sizeof(*geom));
 
   geom->num_vertices = 3;
-  geom->gl_draw_mode = GL_TRIANGLES;
-  geom->gl_indexed_drawing = false;
+  geom->gl.draw_mode = GL_TRIANGLES;
+  geom->indexed_drawing = false;
 
-  glGenVertexArrays(1, &geom->gl_vao);
-  glBindVertexArray(geom->gl_vao);
-  GLuint position_vbo;
-  glGenBuffers(1, &position_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
+  glGenBuffers(1, &geom->gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom->gl.position_vbo);
   glBufferData(
       GL_ARRAY_BUFFER, 9 * sizeof(GLfloat),
       (float[9]){-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f},
       GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
 
   return geom;
 }
@@ -49,14 +45,11 @@ csg_geometry_t* csg_geometry_create_cube(void) {
   csg_geometry_t* geom = csg_malloc(sizeof(*geom));
 
   geom->num_vertices = 36;  // XXX
-  geom->gl_draw_mode = GL_TRIANGLES;
-  geom->gl_indexed_drawing = true;
+  geom->gl.draw_mode = GL_TRIANGLES;
+  geom->indexed_drawing = true;
 
-  glGenVertexArrays(1, &geom->gl_vao);
-  glBindVertexArray(geom->gl_vao);
-  GLuint position_vbo;
-  glGenBuffers(1, &position_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
+  glGenBuffers(1, &geom->gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom->gl.position_vbo);
   glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat),
                (float[24]){
                    // bottom half, cw from near-left, [0]
@@ -90,9 +83,8 @@ csg_geometry_t* csg_geometry_create_cube(void) {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  GLuint position_ibo;
-  glGenBuffers(1, &position_ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, position_ibo);
+  glGenBuffers(1, &geom->gl.position_ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom->gl.position_ibo);
   glBufferData(
       GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint),
       (GLuint[36]){0, 1, 2, 2, 3, 1, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0,
@@ -100,8 +92,6 @@ csg_geometry_t* csg_geometry_create_cube(void) {
       GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  glBindVertexArray(0);
 
   return geom;
 }

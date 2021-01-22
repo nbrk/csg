@@ -70,7 +70,7 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
 }
 static void glfw_adapter_begin_frame(csg_gui_adapter_t* adapter) {
   glfwMakeContextCurrent(adapter->backend_cookie);
-  // no ther preps to draw...
+  // no ther preparations before the drawing...
 
   nk_glfw3_new_frame(adapter->ui_cookie);
 }
@@ -89,12 +89,17 @@ static void glfw_adapter_destroy(csg_gui_adapter_t* adapter) {
   glfwDestroyWindow(adapter->backend_cookie);
 }
 
-static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
+static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
+                                             int height, int flags,
+                                             void* shared_backend) {
   glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+  //  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  //  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  //  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  //  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   GLFWwindow* window = NULL;
   bool fullscreen = flags != 0 ? true : false;
 
@@ -104,7 +109,9 @@ static csg_gui_adapter_t glfw_adapter_create(int width, int height, int flags) {
     height = mode->height;
   }
   window = glfwCreateWindow(width, height, "GLFW",
-                            fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+                            fullscreen ? glfwGetPrimaryMonitor() : NULL,
+                            shared_backend);
+  glfwSetWindowPos(window, x_pos, y_pos);
   glfwMakeContextCurrent(window);
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSwapInterval(1);

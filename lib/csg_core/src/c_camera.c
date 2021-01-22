@@ -60,3 +60,9 @@ csg_camera_t csg_camera_default(void) {
       CSG_PROJECTION_PERSPECTIVE, (csg_vec3_t){0.f, 0.f, 10.f},
       (csg_vec3_t){0.f, 0.f, 0.f}, (csg_vec3_t){0.f, 1.f, 0.f}, 4.0f / 3.0f);
 }
+
+csg_camera_t csg_camera_default_ortho(void) {
+  return csg_camera_create(
+      CSG_PROJECTION_ORTHOGRAPHIC, (csg_vec3_t){0.f, 0.f, 10.f},
+      (csg_vec3_t){0.f, 0.f, 0.f}, (csg_vec3_t){0.f, 1.f, 0.f}, 4.0f / 3.0f);
+}

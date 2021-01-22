@@ -19,6 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+#include <GL/glew.h>
 #include <assert.h>
 #include <csg/gui.h>
 #include <stdlib.h>
@@ -30,10 +31,13 @@ void csg_gui_adapter_update(csg_gui_adapter_t* adapter) {
 }
 
 csg_gui_adapter_t csg_gui_adapter_create(csg_gui_adapter_ops_t backend_ops,
-                                         int width, int height, int flags) {
+                                         int x_pos, int y_pos, int width,
+                                         int height, int flags,
+                                         void* shared_backend) {
   assert(backend_ops.create_func != NULL);
 
-  csg_gui_adapter_t adapter = backend_ops.create_func(width, height, flags);
+  csg_gui_adapter_t adapter = backend_ops.create_func(
+      x_pos, y_pos, width, height, flags, shared_backend);
   adapter.ops = backend_ops;
   return adapter;
 }

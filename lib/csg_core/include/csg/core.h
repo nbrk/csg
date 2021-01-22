@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include <GL/glew.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -87,9 +88,14 @@ typedef struct {
 // TODO: geometry system
 typedef struct {
   int num_vertices;
-  unsigned gl_vao;
-  int gl_draw_mode;
-  bool gl_indexed_drawing;
+  //  unsigned gl_vao;
+  //  int gl_draw_mode;
+  bool indexed_drawing;
+  struct {
+    GLenum draw_mode;
+    GLuint position_vbo;
+    GLuint position_ibo;
+  } gl;
   csg_material_t material;
 } csg_geometry_t;
 
@@ -128,6 +134,7 @@ extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
  * @return
  */
 extern csg_camera_t csg_camera_default(void);
+extern csg_camera_t csg_camera_default_ortho(void);
 extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera);
 extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera);
 

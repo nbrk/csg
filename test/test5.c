@@ -24,43 +24,88 @@
 #include <csg/core.h>
 #include <csg/gui.h>
 #include <csg/gui_glfw3.h>
+#include <math.h>
 #include <stdio.h>
 
 int main(int argc, char** argv) {
-  csg_gui_adapter_t adapter =
-      csg_gui_adapter_create(csg_gui_glfw3_adapter_ops(), 1024, 768, 0);
+  csg_gui_adapter_t adapter = csg_gui_adapter_create(
+      csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
+
+  csg_gui_adapter_t adapter2 =
+      csg_gui_adapter_create(csg_gui_glfw3_adapter_ops(), 1100, 100, 640, 480,
+                             0, adapter.backend_cookie);
 
   // nodes
   csg_node_t* root = csg_node_create(NULL, NULL);
+  //  root->geometry = csg_geometry_create_cube();
+  root->geometry = csg_geometry_create_triangle();
+  root->geometry->material = csg_material_create();
+  root->geometry->material.diffuse_color = (csg_vec4_t){1.0f, 0.7f, 0.4f, 1.0f};
 
   csg_vec4_t clear_color = (csg_vec4_t){0.20f, 0.0f, 0.0f, 1.0f};
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
     csg_gui_adapter_update(&adapter);
+    csg_gui_adapter_update(&adapter2);
 
     if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
 
     csg_gui_adapter_begin_frame(&adapter);
+    {
+      // scene
+      csg_render(root, csg_camera_default(), clear_color);
 
-    // scene
-    csg_render(root, csg_camera_default(), clear_color);
-
-    // ui
-    if (nk_begin(adapter.nk, "Render control", nk_rect(100, 100, 240, 160),
-                 NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
-                     NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
-      nk_layout_row_dynamic(adapter.nk, 25, 1);
-      nk_property_float(adapter.nk, "Clear color Red", 0.0f, &clear_color.x,
-                        1.0f, 0.01f, 0.001f);
-      nk_property_float(adapter.nk, "Clear color Green", 0.0f, &clear_color.y,
-                        1.0f, 0.01f, 0.001f);
-      nk_property_float(adapter.nk, "Clear color Blue", 0.0f, &clear_color.z,
-                        1.0f, 0.01f, 0.001f);
+      // ui
+      if (nk_begin(adapter.nk, "Render control", nk_rect(100, 100, 320, 240),
+                   NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_TITLE |
+                       NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+                       NK_WINDOW_MINIMIZABLE)) {
+        nk_layout_row_dynamic(adapter.nk, 25, 1);
+        nk_property_float(adapter.nk, "Clear color Red", 0.0f, &clear_color.x,
+                          1.0f, 0.01f, 0.001f);
+        nk_property_float(adapter.nk, "Clear color Green", 0.0f, &clear_color.y,
+                          1.0f, 0.01f, 0.001f);
+        nk_property_float(adapter.nk, "Clear color Blue", 0.0f, &clear_color.z,
+                          1.0f, 0.01f, 0.001f);
+        nk_property_float(adapter.nk, "Material Red", 0.0f,
+                          &root->geometry->material.diffuse_color.x, 1.0f,
+                          0.01f, 0.001f);
+        nk_property_float(adapter.nk, "Material Green", 0.0f,
+                          &root->geometry->material.diffuse_color.y, 1.0f,
+                          0.01f, 0.001f);
+        nk_property_float(adapter.nk, "Material Blue", 0.0f,
+                          &root->geometry->material.diffuse_color.z, 1.0f,
+                          0.01f, 0.001f);
+      }
+      nk_end(adapter.nk);
     }
-    nk_end(adapter.nk);
-
     csg_gui_adapter_end_frame(&adapter);
+
+    csg_gui_adapter_begin_frame(&adapter2);
+    {
+      // scene
+      csg_render(root, csg_camera_default_ortho(),
+                 (csg_vec4_t){0.2f, 0.2f, 0.3f, 1.0f});
+      // ui
+      if (nk_begin(adapter2.nk, "Model transform", nk_rect(0, 0, 320, 240),
+                   NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_TITLE |
+                       NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+                       NK_WINDOW_MINIMIZABLE)) {
+        nk_layout_row_dynamic(adapter2.nk, 25, 1);
+        nk_property_float(adapter2.nk, "Rotation along X", -2.0f * M_PI,
+                          &root->transform.rotation.x, 2.0f * M_PI, 0.10f,
+                          0.01f);
+        nk_property_float(adapter2.nk, "Rotation along Y", -2.0f * M_PI,
+                          &root->transform.rotation.y, 2.0f * M_PI, 0.10f,
+                          0.01f);
+        nk_property_float(adapter2.nk, "Rotation along Z", -2.0f * M_PI,
+                          &root->transform.rotation.z, 2.0f * M_PI, 0.10f,
+                          0.01f);
+      }
+      nk_end(adapter2.nk);
+    }
+    csg_gui_adapter_end_frame(&adapter2);
   }
 
   return 0;

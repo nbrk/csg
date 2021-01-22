@@ -22,15 +22,16 @@
 
 #include <GL/glew.h>
 #include <csg/gui.h>
+#include <csg/gui_glfw3.h>
 #include <stdio.h>
 
-extern csg_gui_adapter_ops_t glfw3_adapter_ops;
+// extern csg_gui_adapter_ops_t glfw3_adapter_ops;
 
 int main(int argc, char** argv) {
-  csg_gui_adapter_t adapter1 =
-      csg_gui_adapter_create(glfw3_adapter_ops, 320, 240, 0);
-  csg_gui_adapter_t adapter2 =
-      csg_gui_adapter_create(glfw3_adapter_ops, 1024, 768, 0);
+  csg_gui_adapter_t adapter1 = csg_gui_adapter_create(
+      csg_gui_glfw3_adapter_ops(), 0, 0, 320, 240, 0, NULL);
+  csg_gui_adapter_t adapter2 = csg_gui_adapter_create(
+      csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
 
   csg_gui_adapter_t saved_adapter1 = adapter1;
   while (adapter1.flags & CSG_GUI_FLAG_RUNNING &&
