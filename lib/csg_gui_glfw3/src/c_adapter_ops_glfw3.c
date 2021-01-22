@@ -80,7 +80,7 @@ static void glfw_adapter_end_frame(csg_gui_adapter_t* adapter) {
                   MAX_ELEMENT_BUFFER);
 
   // TODO: restore GL state to ours after the Nuklear
-  glEnable(GL_DEPTH_TEST);
+  //  glEnable(GL_DEPTH_TEST);
 
   glfwSwapBuffers(adapter->backend_cookie);
 }
@@ -93,9 +93,12 @@ static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
                                              int height, int flags,
                                              void* shared_backend) {
   glfwInit();
+
+  // FIXME: Proper OpenGL context version/compatibility.
+  // OpenGL 3 core absolutely requires VAOs to encapsulate the data objects, but
+  // it's not obvious how to properly share the data between windows then.
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-
   //  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   //  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   //  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

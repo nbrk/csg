@@ -34,9 +34,6 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
   //  printf("Render node %p, string cookie: %s\n", node, node->cookie);
   assert(node->geometry != NULL);
 
-  // FIXME
-  //  glBindVertexArray(0);
-
   // query the uniforms' locations
   GLuint program = node->geometry->material.gl_program;
   GLuint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");
@@ -54,6 +51,7 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
 
   // draw arrays / elements
   if (node->geometry->indexed_drawing == true) {
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry->gl.position_vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry->gl.position_ibo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
@@ -65,6 +63,9 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
     glEnableVertexAttribArray(0);
     glDrawArrays(node->geometry->gl.draw_mode, 0, node->geometry->num_vertices);
   }
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 static void render_node(csg_node_t* node, csg_mat4_t projection,
