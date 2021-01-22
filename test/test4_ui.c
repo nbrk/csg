@@ -24,8 +24,6 @@
 
 #include <stdlib.h>
 
-#include "nuklear.h"
-
 static void ui_update_rendering(struct nk_context* nk,
                                 struct ui_cookie* cookie);
 

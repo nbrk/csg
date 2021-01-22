@@ -19,16 +19,23 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-#pragma once
+#include <string.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-#include <csg/core.h>
-#include <csg/gui_glfw3.h>
+// duplicate our defines for nuklear, same for both users and the implementation
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_KEYSTATE_BASED_INPUT
+#define MAX_VERTEX_BUFFER 512 * 1024
+#define MAX_ELEMENT_BUFFER 128 * 1024
 
-struct ui_cookie {
-  csg_vec4_t clear_color;
-  csg_node_t* root;
-};
-
-extern struct nk_glfw* ui_init(void* glfwwindow);
-extern void ui_draw(struct nk_glfw* nk_glfw);
-extern void ui_update(struct nk_glfw* nk_glfw, void* cookie);
+#define NK_IMPLEMENTATION
+#define NK_GLFW_GL3_IMPLEMENTATION
+#include "internal_nuklear.h"
+#include <csg/nuklear_glfw_gl3.h>
