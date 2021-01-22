@@ -12,6 +12,6 @@ set(NAME csg_gui)
 
 add_library(${NAME} SHARED ${SRCS})
 target_include_directories(${NAME} PUBLIC include/)
-target_link_libraries(${NAME} PRIVATE csg_core GLEW GL m cglm)
+target_link_libraries(${NAME} PRIVATE GLEW GL m cglm)
 target_link_directories(${NAME} PRIVATE /usr/local/lib)
 target_include_directories(${NAME} PRIVATE  /usr/local/include)
