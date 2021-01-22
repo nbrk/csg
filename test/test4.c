@@ -19,15 +19,25 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-#include <cglm/struct.h>
+
+#include <GL/glew.h>
+#include <csg/gui.h>
 #include <csg/core.h>
+#include <stdio.h>
 
-csg_mat4_t csg_mat4_identity(void) {
-  mat4s m = glms_mat4_identity();
-  return *(csg_mat4_t*)&m;
-}
+extern csg_gui_adapter_ops_t glfw3_adapter_ops;
 
-csg_mat4_t csg_mat4_mul(csg_mat4_t m1, csg_mat4_t m2) {
-  mat4s r = glms_mat4_mul(*(mat4s*)&m1, *(mat4s*)&m2);
-  return *(csg_mat4_t*)&r;
+int main(int argc, char** argv) {
+  csg_gui_adapter_t adapter =
+      csg_gui_adapter_create(glfw3_adapter_ops, 1024, 768, 0);
+
+  while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
+    csg_gui_adapter_update(&adapter);
+
+    csg_gui_adapter_begin_frame(&adapter);
+    csg_render(NULL, NULL, (csg_vec4_t){0.0f, 0.4f, 0.4f, 1.0f});
+    csg_gui_adapter_end_frame(&adapter);
+  }
+
+  return 0;
 }

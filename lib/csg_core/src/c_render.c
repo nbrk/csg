@@ -25,6 +25,10 @@
 #include <csg/core.h>
 #include <stdio.h>
 
+static csg_mat4_t from_glm_mat4s(mat4s m) { return *(csg_mat4_t*)&m; }
+
+static mat4s from_csg_mat4(csg_mat4_t m) { return *(mat4s*)&m; }
+
 static void do_render_node(csg_node_t* node, csg_mat4_t projection,
                            csg_mat4_t view, csg_mat4_t model) {
   //  printf("Render node %p, string cookie: %s\n", node, node->cookie);
@@ -59,8 +63,9 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
 static void render_node(csg_node_t* node, csg_mat4_t projection,
                         csg_mat4_t view, csg_mat4_t model) {
   // update the given model matrix with our transform
-  model =
-      csg_mat4_mul(csg_transform_calc_model_matrix(&node->transform), model);
+  model = from_glm_mat4s(glms_mat4_mul(
+      from_csg_mat4(csg_transform_calc_model_matrix(&node->transform)),
+      from_csg_mat4(model)));
 
   // do the actual rendering if the node has geometry
   if (node->geometry != NULL) do_render_node(node, projection, view, model);
@@ -78,7 +83,7 @@ void csg_render(csg_node_t* root, csg_camera_t* camera,
   if (camera != NULL && root != NULL) {
     csg_mat4_t projection = csg_camera_calc_projection_matrix(camera);
     csg_mat4_t view = csg_camera_calc_view_matrix(camera);
-    csg_mat4_t model = csg_mat4_identity();
+    csg_mat4_t model = from_glm_mat4s(glms_mat4_identity());
     render_node(root, projection, view, model);
   }
 }

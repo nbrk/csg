@@ -7,7 +7,6 @@ set(SRCS
 
   src/internal.h
   src/c_malloc.c
-  src/c_linalgebra.c
   src/c_node.c
   src/c_camera.c
   src/c_transform.c

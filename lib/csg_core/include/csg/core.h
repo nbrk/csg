@@ -113,9 +113,6 @@ extern void csg_print_malloc_stat(void);
 extern void* csg_realloc(void* mem, size_t size);
 extern void csg_set_malloc_debug(bool val);
 
-extern csg_mat4_t csg_mat4_identity(void);
-extern csg_mat4_t csg_mat4_mul(csg_mat4_t m1, csg_mat4_t m2);
-
 extern csg_node_t* csg_node_create(csg_node_t* parent, void* cookie);
 extern void csg_node_traverse(csg_node_t* node, csg_traverse_mode_e type,
                               void (*func)(csg_node_t*, void*),
