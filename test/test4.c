@@ -37,10 +37,7 @@ int main(int argc, char** argv) {
   struct ui_cookie cookie;
 
   // nodes
-  csg_node_t* node = csg_node_create(NULL, NULL);
-  adapter.ops.begin_frame_func(&adapter);
-  node->geometry = csg_geometry_create_cube();
-  node->geometry->material = csg_material_create();
+  csg_node_t* root = csg_node_create(NULL, NULL);
 
   // ui cookie
   cookie.clear_color = (csg_vec4_t){0.20f, 0.0f, 0.0f, 1.0f};
@@ -51,10 +48,24 @@ int main(int argc, char** argv) {
     if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
 
+    if (adapter.keyboard[CSG_GUI_KEY_C] == CSG_GUI_FROM_RELEASE_TO_PRESS) {
+      // create random cube
+      csg_node_t* node = csg_node_create(root, NULL);
+      node->geometry = csg_geometry_create_cube();
+      node->geometry->material = csg_material_create();
+      node->transform.translation.x = rand() % 10;
+      node->transform.translation.y = rand() % 5;
+      node->transform.translation.z = rand() % 5;
+    }
+
+    if (adapter.keyboard[CSG_GUI_KEY_T] == CSG_GUI_PRESS) {
+      // create random triangle
+    }
+
     ui_update(ui, &cookie);
 
     csg_gui_adapter_begin_frame(&adapter);
-    csg_render(node, csg_camera_default(), cookie.clear_color);
+    csg_render(root, csg_camera_default(), cookie.clear_color);
     ui_draw(ui);
     csg_gui_adapter_end_frame(&adapter);
   }

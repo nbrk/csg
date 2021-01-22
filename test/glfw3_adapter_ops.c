@@ -33,11 +33,31 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
     adapter->flags |= CSG_GUI_FLAG_WANT_CLOSE;
   }
 
-  // read mouse/keyboard state from the backend
+  // read keyboard state from the backend
   // NOTE: assuming full compatibility between csg_gui and glfw key/mouse button
-  // names and press/release/etc state names
-  for (size_t i = 0; i <= CSG_GUI_NUM_KEYS; i++)
-    adapter->keyboard[i] = glfwGetKey(window, i);
+  for (size_t i = 0; i <= CSG_GUI_NUM_KEYS; i++) {
+    int glfw_state = glfwGetKey(window, i);
+    char state = CSG_GUI_RELEASE;  // XXX
+    if (glfw_state == GLFW_PRESS) {
+      // check previous state to sense the transition from release to press
+      if (adapter->keyboard[i] == CSG_GUI_RELEASE)
+        state = CSG_GUI_FROM_RELEASE_TO_PRESS;
+      else
+        state = CSG_GUI_PRESS;
+    }
+    if (glfw_state == GLFW_RELEASE) {
+      // check previous state to sense the transition from press to release
+      if (adapter->keyboard[i] == CSG_GUI_PRESS)
+        state = CSG_GUI_FROM_PRESS_TO_RELEASE;
+      else
+        state = CSG_GUI_RELEASE;
+    }
+    if (glfw_state == GLFW_REPEAT) state = CSG_GUI_REPEAT;
+
+    adapter->keyboard[i] = state;
+  }
+
+  // read mouse state from the backend
   for (size_t i = 0; i <= CSG_GUI_NUM_MOUSE_BUTTONS; i++)
     adapter->mouse[i] = glfwGetMouseButton(window, i);
   double x, y;

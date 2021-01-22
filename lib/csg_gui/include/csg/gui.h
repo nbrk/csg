@@ -178,6 +178,8 @@
 #define CSG_GUI_RELEASE 0
 #define CSG_GUI_PRESS 1
 #define CSG_GUI_REPEAT 2
+#define CSG_GUI_FROM_RELEASE_TO_PRESS 3
+#define CSG_GUI_FROM_PRESS_TO_RELEASE 4
 
 /******************************************************************************
  *

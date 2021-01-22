@@ -52,16 +52,18 @@ void ui_update(struct nk_glfw* nk_glfw, void* cookie) {
 }
 
 void ui_update_rendering(struct nk_context* nk, struct ui_cookie* cookie) {
+  csg_vec4_t* clear_color = &cookie->clear_color;
+
   if (nk_begin(nk, "Render control", nk_rect(100, 100, 240, 160),
                NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                    NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
     nk_layout_row_dynamic(nk, 25, 1);
-    nk_property_float(nk, "Clear color Red", 0.0f, &cookie->clear_color.x, 1.0f,
+    nk_property_float(nk, "Clear color Red", 0.0f, &clear_color->x, 1.0f, 0.01f,
+                      0.001f);
+    nk_property_float(nk, "Clear color Green", 0.0f, &clear_color->y, 1.0f,
                       0.01f, 0.001f);
-    nk_property_float(nk, "Clear color Green", 0.0f, &cookie->clear_color.y,
-                      1.0f, 0.01f, 0.001f);
-    nk_property_float(nk, "Clear color Blue", 0.0f, &cookie->clear_color.z,
-                      1.0f, 0.01f, 0.001f);
+    nk_property_float(nk, "Clear color Blue", 0.0f, &clear_color->z, 1.0f,
+                      0.01f, 0.001f);
   }
   nk_end(nk);
 }
