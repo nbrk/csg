@@ -23,10 +23,10 @@
 #include <csg/gui.h>
 #include <stdlib.h>
 
-void csg_gui_adapter_update_input(csg_gui_adapter_t* adapter) {
-  assert(adapter->ops.update_input_func != NULL);
+void csg_gui_adapter_update(csg_gui_adapter_t* adapter) {
+  assert(adapter->ops.update_func != NULL);
 
-  adapter->ops.update_input_func(adapter);
+  adapter->ops.update_func(adapter);
 }
 
 csg_gui_adapter_t csg_gui_adapter_create(csg_gui_adapter_ops_t backend_ops,

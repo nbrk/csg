@@ -20,7 +20,7 @@ target_link_directories(${NAME} PRIVATE /usr/local/lib)
 target_link_libraries(${NAME} PRIVATE csg_core glfw GLEW GL m nuklear_impl)
 
 set(NAME test3)
-add_executable(${NAME} ${NAME}.c )
+add_executable(${NAME} ${NAME}.c glfw3_adapter_ops.c )
 target_include_directories(${NAME} PRIVATE /usr/local/include)
 target_link_directories(${NAME} PRIVATE /usr/local/lib)
 target_link_libraries(${NAME} PRIVATE csg_core csg_gui GLEW GL glfw )
