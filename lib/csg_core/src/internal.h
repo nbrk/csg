@@ -19,13 +19,4 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-#include <GL/glew.h>
-
-#include "csg_internal.h"
-
-void csg_init(void) {
-  glewExperimental = GL_TRUE;
-  glewInit();
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-}
+#pragma once
