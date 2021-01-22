@@ -25,6 +25,7 @@
 #include <csg/core.h>
 #include <csg/gui.h>
 #include <csg/gui_glfw3.h>
+#include <limits.h>
 #include <stdio.h>
 
 static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
@@ -65,6 +66,13 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   double x, y;
   // NOTE: cursor position has discrete steps in csg_gui
   glfwGetCursorPos(window, &x, &y);
+  if (adapter->mouse_deltax == INT_MAX && adapter->mouse_deltay == INT_MAX) {
+    // special case for when there is no 'old' coordinates
+    adapter->mouse_x = (int)x;
+    adapter->mouse_y = (int)y;
+  }
+  adapter->mouse_deltax = (int)x - adapter->mouse_x;
+  adapter->mouse_deltay = (int)y - adapter->mouse_y;
   adapter->mouse_x = (int)x;
   adapter->mouse_y = (int)y;
 }
@@ -80,7 +88,7 @@ static void glfw_adapter_end_frame(csg_gui_adapter_t* adapter) {
                   MAX_ELEMENT_BUFFER);
 
   // TODO: restore GL state to ours after the Nuklear
-  //  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
 
   glfwSwapBuffers(adapter->backend_cookie);
 }
@@ -127,6 +135,8 @@ static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
   adapter.flags = CSG_GUI_FLAG_FULLSCREEN | CSG_GUI_FLAG_RUNNING;
   adapter.mouse_x = 0;
   adapter.mouse_y = 0;
+  adapter.mouse_deltax = INT_MAX;
+  adapter.mouse_deltay = INT_MAX;
   adapter.screen_width = width;
   adapter.screen_height = height;
 

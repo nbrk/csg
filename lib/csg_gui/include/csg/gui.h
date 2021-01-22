@@ -216,6 +216,8 @@ struct csg_gui_adapter_t {
   // mouse state
   int mouse_x;
   int mouse_y;
+  int mouse_deltax;
+  int mouse_deltay;
   char mouse[CSG_GUI_NUM_MOUSE_BUTTONS];
 
   // keyboard state
