@@ -62,17 +62,17 @@ static void do_render_node(csg_node_t* node,
 
   // draw arrays / elements
   if ((node->geometry.flags & CSG_GEOMETRY_FLAG_INDEXED_DRAW) != 0) {
-    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.position_vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.position_ibo);
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vertices_vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.vertices_ibo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-    glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_vertices,
+    glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_to_draw,
                    GL_UNSIGNED_INT, NULL);
   } else {
-    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.position_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vertices_vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-    glDrawArrays(node->geometry.gl.draw_mode, 0, node->geometry.num_vertices);
+    glDrawArrays(node->geometry.gl.draw_mode, 0, node->geometry.num_to_draw);
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -95,12 +95,16 @@ typedef struct {
 // TODO: geometry system
 typedef struct {
   int flags;
-  int num_vertices;
+  int num_to_draw;
   struct {
     GLenum draw_mode;
     GLenum polygon_mode;
-    GLuint position_vbo;
-    GLuint position_ibo;
+    GLuint vertices_vbo;
+    GLuint vertices_ibo;
+    GLuint texcoords_vbo;
+    GLuint texcoords_ibo;
+    GLuint normals_vbo;
+    GLuint normals_ibo;
   } gl;
   csg_material_t material;
 } csg_geometry_t;
@@ -159,6 +163,8 @@ extern void csg_render(csg_node_t* root,
 extern csg_geometry_t csg_geometry_none(void);
 extern csg_geometry_t csg_geometry_create_triangle(void);
 extern csg_geometry_t csg_geometry_create_cube(void);
+extern csg_geometry_t csg_geometry_create_octahedron(void);
+extern csg_geometry_t csg_geometry_create_sphere(int gradation);
 
 extern csg_material_t csg_material_create(void);
 extern csg_material_t csg_material_none(void);
