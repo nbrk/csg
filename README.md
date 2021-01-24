@@ -24,13 +24,16 @@ This is how a 'input-update-render' loop may look like with the API:
 ``` c
   csg_gui_adapter_t adapter = csg_gui_adapter_create(
       csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
+      
+  // shared geometry
+  csg_geometry_t* cube = csg_geometry_create_cube();
 
   // nodes
   csg_node_t* root = csg_node_create(NULL, NULL);
   for (size_t i = 0; i <= 16; i += 2) {
     csg_node_t* node = csg_node_create(root, NULL);
     node->transform.translation.x = i - 8;
-    node->geometry = csg_geometry_create_cube();
+    node->geometry = cube;
     node->geometry->material = csg_material_create();
     node->geometry->material.diffuse_color = (csg_vec4_t){
         1.0f / (rand() % 10), 1.f / (rand() % 10), 1.f / (rand() % 10), 1.0f};
