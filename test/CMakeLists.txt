@@ -28,3 +28,10 @@ add_executable(${NAME} ${NAME}.c )
 target_include_directories(${NAME} PRIVATE /usr/local/include)
 target_link_directories(${NAME} PRIVATE /usr/local/lib)
 target_link_libraries(${NAME} PRIVATE csg_core csg_gui csg_gui_glfw3)
+
+
+set(NAME test6)
+add_executable(${NAME} ${NAME}.c )
+target_include_directories(${NAME} PRIVATE /usr/local/include)
+target_link_directories(${NAME} PRIVATE /usr/local/lib)
+target_link_libraries(${NAME} PRIVATE csg_core csg_gui csg_gui_glfw3)

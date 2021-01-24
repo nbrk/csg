@@ -98,6 +98,7 @@ typedef struct {
   int num_vertices;
   struct {
     GLenum draw_mode;
+    GLenum polygon_mode;
     GLuint position_vbo;
     GLuint position_ibo;
   } gl;

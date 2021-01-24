@@ -43,6 +43,8 @@ static void do_render_node(csg_node_t* node,
   assert(node->geometry.flags & CSG_GEOMETRY_FLAG_ENABLED);
   assert(node->geometry.material.flags & CSG_MATERIAL_FLAG_ENABLED);
 
+  glPolygonMode(GL_FRONT_AND_BACK, node->geometry.gl.polygon_mode);
+
   // query the uniforms' locations
   GLuint program = node->geometry.material.gl_program;
   GLuint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");

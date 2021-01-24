@@ -42,6 +42,7 @@ csg_geometry_t csg_geometry_create_triangle(void) {
   geom.flags = CSG_GEOMETRY_FLAG_ENABLED;
   geom.num_vertices = 3;
   geom.gl.draw_mode = GL_TRIANGLES;
+  geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
 
   glGenBuffers(1, &geom.gl.position_vbo);
@@ -62,6 +63,8 @@ csg_geometry_t csg_geometry_create_cube(void) {
   geom.flags = CSG_GEOMETRY_FLAG_ENABLED | CSG_GEOMETRY_FLAG_INDEXED_DRAW;
   geom.num_vertices = 36;  // XXX
   geom.gl.draw_mode = GL_TRIANGLES;
+  geom.gl.polygon_mode = GL_FILL;
+  geom.material = csg_material_none();
 
   glGenBuffers(1, &geom.gl.position_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
