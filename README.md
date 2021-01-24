@@ -13,6 +13,7 @@ Right now implemented features include:
 - Immediate and relative (cursor delta, up-down transition, etc.) input states available each frame
 - Draw, transforms, etc. may be used straight-away inside any OpenGL context (no need of setup, even the `csg_gui` adapters are fully optional).
 - Various graph traversal patterns: (DFS, BFS, path-to-root, etc.)
+- Wavefront .OBJ meshes
 
 ### Requirements
 The core library depends only on `cglm` and GL/GLEW. The gui_glfw3 adapter 
