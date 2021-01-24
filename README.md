@@ -23,4 +23,4 @@ of planned functionality is supported for now, but the code is already proved
 to be useful in some scenarios.
 
 ![window sharing](https://github.com/nbrk/csg/blob/master/doc/1.png?raw=true)
-![window sharing](https://github.com/nbrk/csg/blob/master/doc/1.png?raw=true)
+![window sharing](https://github.com/nbrk/csg/blob/master/doc/2.png?raw=true)
