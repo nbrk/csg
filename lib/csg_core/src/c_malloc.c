@@ -26,9 +26,7 @@
 #include <string.h>
 #include <sys/queue.h>
 
-#undef malloc
-
-static bool debug = 0;
+static bool debug = false;
 
 struct memchunk {
   void* mem;
@@ -40,9 +38,7 @@ struct memchunk {
 LIST_HEAD(listhead, memchunk);
 static struct listhead allocations = LIST_HEAD_INITIALIZER(allocations);
 
-void csg_set_malloc_debug(bool val) { debug = val; }
-
-void* csg_malloc(size_t size) {
+void* csg_malloc_dbg(size_t size, const char* file, int line) {
   struct memchunk* chunk = malloc(sizeof(*chunk));
 
   chunk->mem = malloc(size);
@@ -56,12 +52,13 @@ void* csg_malloc(size_t size) {
   bzero(chunk->mem, chunk->size);
 
   if (debug)
-    printf("csg_malloc: allocation @%p (%zu bytes)\n", chunk, chunk->size);
+    printf("%s:%d: csg_malloc: allocation @%p (%zu bytes)\n", file, line, chunk,
+           chunk->size);
 
   return chunk->mem;
 }
 
-void* csg_realloc(void* mem, size_t size) {
+void* csg_realloc_dbg(void* mem, size_t size, const char* file, int line) {
   struct memchunk* chunk;
   LIST_FOREACH(chunk, &allocations, entries) {
     if (chunk->mem == mem) {
@@ -71,18 +68,18 @@ void* csg_realloc(void* mem, size_t size) {
       chunk->size = size;
 
       if (debug)
-        printf("csg_realloc: @%p (%zu -> %zu bytes)\n", chunk, oldsize,
-               chunk->size);
+        printf("%s:%d: csg_realloc: @%p (%zu -> %zu bytes)\n", file, line,
+               chunk, oldsize, chunk->size);
 
       return chunk->mem;
     }
   }
 
   // chunk that contains 'mem' not found; malloc
-  return csg_malloc(size);
+  return csg_malloc_dbg(size, file, line);
 }
 
-void csg_free(void* mem) {
+void csg_free_dbg(void* mem, const char* file, int line) {
   //  if (LIST_EMPTY(&allocations)) return;  // XXX
 
   struct memchunk* chunk;
@@ -91,7 +88,9 @@ void csg_free(void* mem) {
       free(chunk->mem);
       LIST_REMOVE(chunk, entries);
 
-      if (debug) printf("csg_free: free @%p (%zu bytes)\n", chunk, chunk->size);
+      if (debug)
+        printf("%s:%d: csg_free: free @%p (%zu bytes)\n", file, line, chunk,
+               chunk->size);
 
       return;
     }
@@ -100,7 +99,7 @@ void csg_free(void* mem) {
   return;
 }
 
-void csg_print_malloc_stat(void) {
+void csg_malloc_print_stat(void) {
   struct memchunk* chunk;
   size_t total = 0;
 
@@ -116,4 +115,8 @@ void csg_print_malloc_stat(void) {
     total += chunk->size;
   }
   printf("Total memory used: %lu bytes\n", total);
+}
+
+void csg_malloc_set_debug(bool value) {
+  debug = value;
 }
