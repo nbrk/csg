@@ -45,7 +45,7 @@ This is how a 'input-update-render' loop may look like with the API:
     // INPUTS
     csg_gui_adapter_update(&adapter);
 
-    if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
+    if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_FROM_RELEASE_TO_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
 
     if (adapter.keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
