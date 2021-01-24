@@ -30,10 +30,16 @@
  * C Scene-Graph (core functionality)
  *
  */
+
 /******************************************************************************
  *
- * ENUMS
+ * CONSTANTS/ENUMS
  */
+#define CSG_GEOMETRY_FLAG_ENABLED 1
+#define CSG_GEOMETRY_FLAG_INDEXED_DRAW 2
+
+#define CSG_MATERIAL_FLAG_ENABLED 1
+
 typedef enum {
   CSG_TRAVERSE_ONLY_SELF,
   CSG_TRAVERSE_ONLY_CHILDREN,
@@ -81,16 +87,15 @@ typedef struct {
 
 // TODO: material system
 typedef struct {
+  int flags;
   csg_vec4_t diffuse_color;
   unsigned gl_program;
 } csg_material_t;
 
 // TODO: geometry system
 typedef struct {
+  int flags;
   int num_vertices;
-  //  unsigned gl_vao;
-  //  int gl_draw_mode;
-  bool indexed_drawing;
   struct {
     GLenum draw_mode;
     GLuint position_vbo;
@@ -106,28 +111,38 @@ struct csg_node_t {
   size_t num_children;
   void* cookie;
   csg_transform_t transform;
-  csg_geometry_t* geometry;
+  csg_geometry_t geometry;
 };
 
 /******************************************************************************
  *
  * FUNCTIONS
  */
-extern void csg_free(void* mem);
-extern void* csg_malloc(size_t size);
-extern void csg_print_malloc_stat(void);
-extern void* csg_realloc(void* mem, size_t size);
-extern void csg_set_malloc_debug(bool val);
+extern void* csg_malloc_dbg(size_t size, const char* file, int line);
+extern void* csg_realloc_dbg(void* mem,
+                             size_t size,
+                             const char* file,
+                             int line);
+extern void csg_free_dbg(void* mem, const char* file, int line);
+#define csg_malloc(x) csg_malloc_dbg(x, __FILE__, __LINE__)
+#define csg_realloc(x, y) csg_realloc_dbg(x, y, __FILE__, __LINE__)
+#define csg_free(x) csg_free_dbg(x, __FILE__, __LINE__)
+
+extern void csg_malloc_set_debug(bool value);
+extern void csg_malloc_print_stat(void);
 
 extern csg_node_t* csg_node_create(csg_node_t* parent, void* cookie);
-extern void csg_node_traverse(csg_node_t* node, csg_traverse_mode_e type,
+extern void csg_node_traverse(csg_node_t* node,
+                              csg_traverse_mode_e type,
                               void (*func)(csg_node_t*, void*),
                               void* func_cookie);
 extern csg_mat4_t csg_transform_calc_model_matrix(csg_transform_t* transform);
 
 extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
-                                      csg_vec3_t position, csg_vec3_t target,
-                                      csg_vec3_t up, float aspect);
+                                      csg_vec3_t position,
+                                      csg_vec3_t target,
+                                      csg_vec3_t up,
+                                      float aspect);
 /**
  * @brief Create the default camera: positioned at +10 (Z), looking at the
  * origin, perspective, aspect 4:3
@@ -135,13 +150,14 @@ extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
  */
 extern csg_camera_t csg_camera_default(void);
 extern csg_camera_t csg_camera_default_ortho(void);
-extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera);
-extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera);
 
-extern void csg_render(csg_node_t* root, csg_camera_t camera,
+extern void csg_render(csg_node_t* root,
+                       csg_camera_t camera,
                        csg_vec4_t clear_color);
 
-extern csg_geometry_t* csg_geometry_create_triangle(void);
-extern csg_geometry_t* csg_geometry_create_cube(void);
+extern csg_geometry_t csg_geometry_none(void);
+extern csg_geometry_t csg_geometry_create_triangle(void);
+extern csg_geometry_t csg_geometry_create_cube(void);
 
 extern csg_material_t csg_material_create(void);
+extern csg_material_t csg_material_none(void);

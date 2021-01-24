@@ -37,21 +37,21 @@ static void test2(GLFWwindow* window) {
 
   // reusable geometry
   //  csg_geometry_t* triangle = csg_geometry_create_triangle();
-  csg_geometry_t* cube = csg_geometry_create_cube();
+  csg_geometry_t cube = csg_geometry_create_cube();
 
   // root
   csg_node_t* root = csg_node_create(NULL, NULL);
   root->geometry = cube;
-  root->geometry->material = csg_material_create();
+  root->geometry.material = csg_material_create();
   // first object..
   csg_node_t* node1 = csg_node_create(root, NULL);
   node1->transform.translation.x = 10.0f;
   node1->geometry = cube;
-  node1->geometry->material = csg_material_create();
+  node1->geometry.material = csg_material_create();
   csg_node_t* node2 = csg_node_create(root, NULL);
   node2->transform.translation.x = -10.0f;
   node2->geometry = cube;
-  node2->geometry->material = csg_material_create();
+  node2->geometry.material = csg_material_create();
 
   const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
   csg_camera_t camera = csg_camera_create(
@@ -103,16 +103,16 @@ static void test2(GLFWwindow* window) {
                      NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
       nk_layout_row_dynamic(nk, 25, 1);
       nk_property_float(nk, "Material color Red", 0.0f,
-                        &root->geometry->material.diffuse_color.x, 1.0f, 0.01f,
+                        &root->geometry.material.diffuse_color.x, 1.0f, 0.01f,
                         0.001f);
       nk_property_float(nk, "Material color Green", 0.0f,
-                        &root->geometry->material.diffuse_color.y, 1.0f, 0.01f,
+                        &root->geometry.material.diffuse_color.y, 1.0f, 0.01f,
                         0.001f);
       nk_property_float(nk, "Material color Blue", 0.0f,
-                        &root->geometry->material.diffuse_color.z, 1.0f, 0.01f,
+                        &root->geometry.material.diffuse_color.z, 1.0f, 0.01f,
                         0.001f);
       nk_property_float(nk, "Material color Alpha", 0.0f,
-                        &root->geometry->material.diffuse_color.w, 1.0f, 0.01f,
+                        &root->geometry.material.diffuse_color.w, 1.0f, 0.01f,
                         0.001f);
     }
     nk_end(nk);
@@ -201,7 +201,7 @@ int main(int argc, char** argv) {
   glewExperimental = GL_TRUE;
   glewInit();
 
-  csg_set_malloc_debug(true);
+  //  csg_set_malloc_debug(true);
   //  csg_init();
 
   test2(window1);

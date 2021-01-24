@@ -20,3 +20,7 @@
  * IN THE SOFTWARE.
  */
 #pragma once
+#include <csg/core.h>
+
+extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera);
+extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera);

@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
       // create random cube
       csg_node_t* node = csg_node_create(root, NULL);
       node->geometry = csg_geometry_create_cube();
-      node->geometry->material = csg_material_create();
+      node->geometry.material = csg_material_create();
       node->transform.translation.x = rand() % 10;
       node->transform.translation.y = rand() % 5;
       node->transform.translation.z = rand() % 5;

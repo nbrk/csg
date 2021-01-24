@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
 #include <GL/glew.h>
 #include <csg/core.h>
 #include <csg/gui.h>
@@ -30,6 +29,8 @@
 #define rand(x) arc4random(x)
 
 int main(int argc, char** argv) {
+  //  csg_malloc_set_debug(true);
+
   csg_gui_adapter_t adapter = csg_gui_adapter_create(
       csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
 
@@ -47,8 +48,8 @@ int main(int argc, char** argv) {
     csg_node_t* node = csg_node_create(root, NULL);
     node->transform.translation.x = i - 8;
     node->geometry = csg_geometry_create_cube();
-    node->geometry->material = csg_material_create();
-    node->geometry->material.diffuse_color = (csg_vec4_t){
+    node->geometry.material = csg_material_create();
+    node->geometry.material.diffuse_color = (csg_vec4_t){
         1.0f / (rand() % 10), 1.f / (rand() % 10), 1.f / (rand() % 10), 1.0f};
   }
 
@@ -151,5 +152,6 @@ int main(int argc, char** argv) {
     csg_gui_adapter_end_frame(&adapter2);
   }
 
+  csg_malloc_print_stat();
   return 0;
 }

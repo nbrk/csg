@@ -45,7 +45,8 @@ static const char* default_fragment_src =
     "}\n"
     "\n";
 
-static int program_add_shader(GLuint program, GLenum shader_type,
+static int program_add_shader(GLuint program,
+                              GLenum shader_type,
                               const char* shader_src) {
   GLuint shader = glCreateShader(shader_type);
   const GLchar* source[1] = {shader_src};
@@ -117,8 +118,19 @@ csg_material_t csg_material_create(void) {
 
   csg_material_t mtrl;
 
-  mtrl.gl_program = program;
+  mtrl.flags = CSG_MATERIAL_FLAG_ENABLED;
   mtrl.diffuse_color = (csg_vec4_t){1.0f, 1.0f, 1.0f, 1.0f};
+  mtrl.gl_program = program;
+
+  return mtrl;
+}
+
+csg_material_t csg_material_none(void) {
+  csg_material_t mtrl;
+
+  mtrl.flags = 0;
+  mtrl.diffuse_color = (csg_vec4_t){0.0f, 0.0f, 0.0f, 0.0f};
+  mtrl.gl_program = 0;
 
   return mtrl;
 }

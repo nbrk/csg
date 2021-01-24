@@ -22,15 +22,30 @@
 #include <GL/glew.h>
 #include <csg/core.h>
 
-csg_geometry_t* csg_geometry_create_triangle(void) {
-  csg_geometry_t* geom = csg_malloc(sizeof(*geom));
+csg_geometry_t csg_geometry_none(void) {
+  csg_geometry_t geom;
 
-  geom->num_vertices = 3;
-  geom->gl.draw_mode = GL_TRIANGLES;
-  geom->indexed_drawing = false;
+  geom.flags = 0;
+  geom.num_vertices = 0;
+  geom.gl.draw_mode = 0;
+  geom.gl.position_vbo = 0;
+  geom.gl.position_ibo = 0;
+  geom.material = csg_material_none();
 
-  glGenBuffers(1, &geom->gl.position_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom->gl.position_vbo);
+  return geom;
+}
+
+csg_geometry_t csg_geometry_create_triangle(void) {
+  //  csg_geometry_t* geom = csg_malloc(sizeof(*geom));
+  csg_geometry_t geom;
+
+  geom.flags = CSG_GEOMETRY_FLAG_ENABLED;
+  geom.num_vertices = 3;
+  geom.gl.draw_mode = GL_TRIANGLES;
+  geom.material = csg_material_none();
+
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
   glBufferData(
       GL_ARRAY_BUFFER, 9 * sizeof(GLfloat),
       (float[9]){-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f},
@@ -40,15 +55,16 @@ csg_geometry_t* csg_geometry_create_triangle(void) {
   return geom;
 }
 
-csg_geometry_t* csg_geometry_create_cube(void) {
-  csg_geometry_t* geom = csg_malloc(sizeof(*geom));
+csg_geometry_t csg_geometry_create_cube(void) {
+  //  csg_geometry_t* geom = csg_malloc(sizeof(*geom));
+  csg_geometry_t geom;
 
-  geom->num_vertices = 36;  // XXX
-  geom->gl.draw_mode = GL_TRIANGLES;
-  geom->indexed_drawing = true;
+  geom.flags = CSG_GEOMETRY_FLAG_ENABLED | CSG_GEOMETRY_FLAG_INDEXED_DRAW;
+  geom.num_vertices = 36;  // XXX
+  geom.gl.draw_mode = GL_TRIANGLES;
 
-  glGenBuffers(1, &geom->gl.position_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom->gl.position_vbo);
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
   glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat),
                (float[24]){
                    // bottom half, cw from near-left, [0]
@@ -81,8 +97,8 @@ csg_geometry_t* csg_geometry_create_cube(void) {
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  glGenBuffers(1, &geom->gl.position_ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom->gl.position_ibo);
+  glGenBuffers(1, &geom.gl.position_ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.position_ibo);
   glBufferData(
       GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint),
       (GLuint[36]){0, 1, 2, 2, 3, 1, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0,

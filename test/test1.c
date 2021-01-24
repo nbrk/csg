@@ -29,7 +29,8 @@ void print_node(csg_node_t* node, void* cookie) {
     indent_level++;
     child = child->parent;
   }
-  for (size_t i = 0; i < indent_level; i++) putchar(' ');
+  for (size_t i = 0; i < indent_level; i++)
+    putchar(' ');
 
   printf("Node @%p, cookie: %s\n", node, node->cookie);
 }
@@ -94,7 +95,7 @@ static void test2(void) {
 }
 
 int main(int argc, char** argv) {
-  csg_set_malloc_debug(true);
+  //  csg_set_malloc_debug(true);
   //  csg_init();
 
   //  test1();
