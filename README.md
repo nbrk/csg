@@ -81,7 +81,7 @@ This is how a 'input-update-render' loop may look like with the API:
                    NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_TITLE |
                        NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                        NK_WINDOW_MINIMIZABLE)) {
-        nk_layout_row_dynamic(adapter2.nk, 25, 1);
+        nk_layout_row_dynamic(adapter.nk, 25, 1);
         nk_property_float(adapter.nk, "Rotation along X", -2.0f * M_PI,
                           &root->transform.rotation.x, 2.0f * M_PI, 0.10f,
                           0.01f);
