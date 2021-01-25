@@ -130,13 +130,13 @@ int main(int argc, char** argv) {
       if (adapter.mouse_deltay != 0)
         root->transform.rotation.x += 0.01f * adapter.mouse_deltay;
     }
-    //    if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_MIDDLE]) {
-    //      if (adapter.mouse_deltay != 0) {
-    //        root->transform.scale.x /= 0.1f * adapter.mouse_deltay;
-    //        root->transform.scale.y /= 0.1f * adapter.mouse_deltay;
-    //        root->transform.scale.z /= 0.1f * adapter.mouse_deltay;
-    //      }
-    //    }
+    if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_MIDDLE]) {
+      if (adapter.mouse_deltay != 0) {
+        root->transform.scale.x -= 0.01f * adapter.mouse_deltay;
+        root->transform.scale.y -= 0.01f * adapter.mouse_deltay;
+        root->transform.scale.z -= 0.01f * adapter.mouse_deltay;
+      }
+    }
 
     csg_gui_adapter_begin_frame(&adapter);
     { csg_render(root, camera, (csg_vec4_t){0.2f, 0.2f, 0.3f, 1.0f}); }

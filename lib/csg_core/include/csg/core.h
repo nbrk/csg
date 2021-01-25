@@ -123,6 +123,10 @@ struct csg_node_t {
  *
  * FUNCTIONS
  */
+extern void* csg_calloc_dbg(size_t number,
+                            size_t size,
+                            const char* file,
+                            int line);
 extern void* csg_malloc_dbg(size_t size, const char* file, int line);
 extern void* csg_realloc_dbg(void* mem,
                              size_t size,
@@ -130,6 +134,7 @@ extern void* csg_realloc_dbg(void* mem,
                              int line);
 extern void csg_free_dbg(void* mem, const char* file, int line);
 #define csg_malloc(x) csg_malloc_dbg(x, __FILE__, __LINE__)
+#define csg_calloc(x, y) csg_calloc_dbg(x, y, __FILE__, __LINE__)
 #define csg_realloc(x, y) csg_realloc_dbg(x, y, __FILE__, __LINE__)
 #define csg_free(x) csg_free_dbg(x, __FILE__, __LINE__)
 

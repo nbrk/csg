@@ -20,9 +20,10 @@
  * IN THE SOFTWARE.
  */
 
-//#define TINYOBJ_MALLOC my_malloc
-//#define TINYOBJ_REALLOC my_realloc
-//#define TINYOBJ_CALLOC my_calloc
-//#define TINYOBJ_FREE my_free
+#include <csg/core.h>
+#define TINYOBJ_MALLOC csg_malloc
+#define TINYOBJ_REALLOC csg_realloc
+#define TINYOBJ_CALLOC csg_calloc
+#define TINYOBJ_FREE csg_free
 #define TINYOBJ_LOADER_C_IMPLEMENTATION
 #include "internal_tinyobj_loader_c.h"

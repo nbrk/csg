@@ -79,6 +79,10 @@ void* csg_realloc_dbg(void* mem, size_t size, const char* file, int line) {
   return csg_malloc_dbg(size, file, line);
 }
 
+void* csg_calloc_dbg(size_t number, size_t size, const char* file, int line) {
+  return csg_malloc_dbg(number * size, file, line);
+}
+
 void csg_free_dbg(void* mem, const char* file, int line) {
   //  if (LIST_EMPTY(&allocations)) return;  // XXX
 
