@@ -41,11 +41,11 @@ static void loadFile(const char* filename,
     fseek(handler, 0, SEEK_END);
     string_size = ftell(handler);
     rewind(handler);
-    *buffer = (char*)malloc(sizeof(char) * (string_size + 1));
+    *buffer = (char*)csg_malloc(sizeof(char) * (string_size + 1));
     read_size = fread(*buffer, sizeof(char), (size_t)string_size, handler);
     (*buffer)[string_size] = '\0';
     if (string_size != read_size) {
-      free(buffer);
+      csg_free(buffer);
     }
     fclose(handler);
   }
@@ -77,7 +77,6 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
-  geom.flags |= CSG_GEOMETRY_FLAG_INDEXED_DRAW;
   geom.num_to_draw = attrib.num_faces;
 
   // VBO
@@ -98,6 +97,7 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
                ibuffer, GL_STATIC_DRAW);
   csg_free(ibuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_INDEXED_DRAW;
 
   // free tiny obj memory
   tinyobj_attrib_free(&attrib);
