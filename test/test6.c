@@ -36,8 +36,10 @@ int main(int argc, char** argv) {
   csg_gui_adapter_t adapter = csg_gui_adapter_create(
       csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
 
+  csg_geometry_t obj2_geometry = csg_geometry_create_from_wavefront(
+      "/usr/home/nbrk/Downloads/junk/meshes/cornell_box.obj");
   csg_geometry_t obj_geometry = csg_geometry_create_from_wavefront(
-      //            "/usr/home/nbrk/Downloads/junk/meshes/bugatti/bugatti.obj");
+      //      "/usr/home/nbrk/Downloads/junk/meshes/bugatti/bugatti.obj");
       "/usr/home/nbrk/Downloads/junk/meshes/FinalBaseMesh.obj");
   //      "/usr/home/nbrk/Downloads/junk/meshes/091_W_Aya_100K.obj");
   //      "/usr/home/nbrk/Downloads/junk/meshes/cornell_box.obj");
@@ -58,14 +60,14 @@ int main(int argc, char** argv) {
     node1 = csg_node_create(root, NULL);
     node1->geometry = obj_geometry;
     node1->geometry.material = material;
-    //    node1->geometry.gl.draw_mode = GL_TRIANGLE_FAN;
-    //    node1->transform.scale = (csg_vec3_t){0.01, 0.01, 0.01};
-    node1->geometry.material.diffuse_color.x = 0.33f;
-    //    node2 = csg_node_create(root, NULL);
-    //    node2->transform.translation.x = -2.0f;
-    //    node2->geometry = octa_geometry;
-    //    node2->geometry.material = material;
-    //    node2->geometry.material.diffuse_color.z = 0.33f;
+    node1->transform.scale = (csg_vec3_t){0.01, 0.01, 0.01};
+    node1->geometry.material.diffuse_color.x = 0.43f;
+    node2 = csg_node_create(root, NULL);
+    node2->transform.translation.x = -2.0f;
+    node2->geometry = obj2_geometry;
+    node2->geometry.material = material;
+    node2->transform.scale = (csg_vec3_t){0.001, 0.001, 0.001};
+    node2->geometry.material.diffuse_color.z = 0.33f;
   }
   //  root->geometry.material = csg_material_create();
   //  root->geometry.material.diffuse_color = (csg_vec4_t){1.0f, 0.0f,
@@ -78,6 +80,14 @@ int main(int argc, char** argv) {
     if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
 
+    if (adapter.keyboard[CSG_GUI_KEY_PAGE_DOWN] == CSG_GUI_PRESS) {
+      camera.position.y -= 1.f;
+      camera.target.y -= 1.0f;
+    }
+    if (adapter.keyboard[CSG_GUI_KEY_PAGE_UP] == CSG_GUI_PRESS) {
+      camera.position.y += 1.f;
+      camera.target.y += 1.f;
+    }
     if (adapter.keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
       camera.position.z -= 1.f;
       camera.target.z -= 1.0f;
@@ -97,12 +107,15 @@ int main(int argc, char** argv) {
 
     if (adapter.keyboard[CSG_GUI_KEY_1] == CSG_GUI_PRESS) {
       node1->geometry.gl.polygon_mode = GL_POINT;
+      node2->geometry.gl.polygon_mode = GL_POINT;
     }
     if (adapter.keyboard[CSG_GUI_KEY_2] == CSG_GUI_PRESS) {
       node1->geometry.gl.polygon_mode = GL_LINE;
+      node2->geometry.gl.polygon_mode = GL_LINE;
     }
     if (adapter.keyboard[CSG_GUI_KEY_3] == CSG_GUI_PRESS) {
       node1->geometry.gl.polygon_mode = GL_FILL;
+      node2->geometry.gl.polygon_mode = GL_FILL;
     }
 
     if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
