@@ -26,15 +26,15 @@
 #include "internal.h"
 
 csg_camera_t csg_camera_create(csg_projection_mode_e projection,
-                               csg_vec3_t position, csg_vec3_t target,
-                               csg_vec3_t up, float aspect) {
-  //  csg_camera_t* camera = csg_malloc(sizeof(*camera));
+                               csg_vec3_t position, float horiz_angle,
+                               float vert_angle, float fov, float aspect) {
   csg_camera_t camera;
   camera.projection = projection;
   camera.position = position;
-  camera.target = target;
-  camera.up = up;
+  camera.horizontal_angle = horiz_angle;
+  camera.vertical_angle = vert_angle;
   camera.aspect = aspect;
+  camera.fov = fov;
 
   return camera;
 }
@@ -42,7 +42,7 @@ csg_camera_t csg_camera_create(csg_projection_mode_e projection,
 csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera) {
   mat4s m;
   if (camera.projection == CSG_PROJECTION_PERSPECTIVE)
-    m = glms_perspective_default(camera.aspect);
+    m = glms_perspective(glm_rad(camera.fov), camera.aspect, 0.1f, 100.0f);
   if (camera.projection == CSG_PROJECTION_ORTHOGRAPHIC)
     m = glms_ortho_default(camera.aspect);
   return *(csg_mat4_t*)&m;
@@ -50,19 +50,56 @@ csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera) {
 
 csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera) {
   mat4s m;
-  m = glms_lookat(*(vec3s*)&camera.position, *(vec3s*)&camera.target,
-                  *(vec3s*)&camera.up);
+  csg_vec3_t direction = csg_camera_get_direction(camera);
+  csg_vec3_t right = csg_camera_get_right(camera);
+  vec3s up = glms_cross(*(vec3s*)&right, *(vec3s*)&direction);
+  m = glms_lookat(*(vec3s*)&camera.position,
+                  glms_vec3_add(*(vec3s*)&camera.position, *(vec3s*)&direction),
+                  up);
   return *(csg_mat4_t*)&m;
 }
 
 csg_camera_t csg_camera_default(void) {
-  return csg_camera_create(
-      CSG_PROJECTION_PERSPECTIVE, (csg_vec3_t){0.f, 0.f, 10.f},
-      (csg_vec3_t){0.f, 0.f, 0.f}, (csg_vec3_t){0.f, 1.f, 0.f}, 4.0f / 3.0f);
+  return csg_camera_create(CSG_PROJECTION_PERSPECTIVE,
+                           (csg_vec3_t){0.f, 0.f, 10.f}, M_PI, 0.0f, 45.0f,
+                           4.0f / 3.0f);
 }
 
 csg_camera_t csg_camera_default_ortho(void) {
-  return csg_camera_create(
-      CSG_PROJECTION_ORTHOGRAPHIC, (csg_vec3_t){0.f, 0.f, 10.f},
-      (csg_vec3_t){0.f, 0.f, 0.f}, (csg_vec3_t){0.f, 1.f, 0.f}, 4.0f / 3.0f);
+  return csg_camera_create(CSG_PROJECTION_ORTHOGRAPHIC,
+                           (csg_vec3_t){0.f, 0.f, 10.f}, M_PI, 0.0f, 45.0f,
+                           4.0f / 3.0f);
+}
+
+csg_vec3_t csg_camera_get_direction(csg_camera_t camera) {
+  vec3s direction =
+      (vec3s){.x = cos(camera.vertical_angle) * sin(camera.horizontal_angle),
+              .y = sin(camera.vertical_angle),
+              .z = cos(camera.vertical_angle) * cos(camera.horizontal_angle)};
+  return *(csg_vec3_t*)&direction;
+}
+
+csg_vec3_t csg_camera_get_right(csg_camera_t camera) {
+  vec3s right = (vec3s){.x = sin(camera.horizontal_angle - M_PI_2),
+                        .y = 0,
+                        .z = cos(camera.horizontal_angle - M_PI_2)};
+  return *(csg_vec3_t*)&right;
+}
+
+void csg_camera_move_by(csg_camera_t* camera, float forward, float strafe,
+                        float jump) {
+  csg_vec3_t direction = csg_camera_get_direction(*camera);
+  csg_vec3_t right = csg_camera_get_right(*camera);
+  vec3s up = glms_cross(*(vec3s*)&right, *(vec3s*)&direction);
+
+  glm_vec3_scale(*(vec3*)&direction, forward, *(vec3*)&direction);
+  glm_vec3_scale(*(vec3*)&right, strafe, *(vec3*)&right);
+  glm_vec3_scale(*(vec3*)&up, jump, *(vec3*)&up);
+
+  vec3s newposition;
+  newposition = glms_vec3_add(*(vec3s*)&camera->position, *(vec3s*)&direction);
+  newposition = glms_vec3_add(newposition, *(vec3s*)&right);
+  newposition = glms_vec3_add(newposition, *(vec3s*)&up);
+
+  camera->position = *(csg_vec3_t*)&newposition;
 }

@@ -80,8 +80,9 @@ typedef struct {
 typedef struct {
   csg_projection_mode_e projection;
   csg_vec3_t position;
-  csg_vec3_t target;
-  csg_vec3_t up;
+  float horizontal_angle;  // yaw
+  float vertical_angle;    // pitch
+  float fov;
   float aspect;
 } csg_camera_t;
 
@@ -123,14 +124,10 @@ struct csg_node_t {
  *
  * FUNCTIONS
  */
-extern void* csg_calloc_dbg(size_t number,
-                            size_t size,
-                            const char* file,
+extern void* csg_calloc_dbg(size_t number, size_t size, const char* file,
                             int line);
 extern void* csg_malloc_dbg(size_t size, const char* file, int line);
-extern void* csg_realloc_dbg(void* mem,
-                             size_t size,
-                             const char* file,
+extern void* csg_realloc_dbg(void* mem, size_t size, const char* file,
                              int line);
 extern void csg_free_dbg(void* mem, const char* file, int line);
 #define csg_malloc(x) csg_malloc_dbg(x, __FILE__, __LINE__)
@@ -142,17 +139,14 @@ extern void csg_malloc_set_debug(bool value);
 extern void csg_malloc_print_stat(void);
 
 extern csg_node_t* csg_node_create(csg_node_t* parent, void* cookie);
-extern void csg_node_traverse(csg_node_t* node,
-                              csg_traverse_mode_e type,
+extern void csg_node_traverse(csg_node_t* node, csg_traverse_mode_e type,
                               void (*func)(csg_node_t*, void*),
                               void* func_cookie);
 extern csg_mat4_t csg_transform_calc_model_matrix(csg_transform_t* transform);
 
-extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
-                                      csg_vec3_t position,
-                                      csg_vec3_t target,
-                                      csg_vec3_t up,
-                                      float aspect);
+csg_camera_t csg_camera_create(csg_projection_mode_e projection,
+                               csg_vec3_t position, float horiz_angle,
+                               float vert_angle, float fov, float aspect);
 /**
  * @brief Create the default camera: positioned at +10 (Z), looking at the
  * origin, perspective, aspect 4:3
@@ -160,9 +154,12 @@ extern csg_camera_t csg_camera_create(csg_projection_mode_e projection,
  */
 extern csg_camera_t csg_camera_default(void);
 extern csg_camera_t csg_camera_default_ortho(void);
+extern csg_vec3_t csg_camera_get_direction(csg_camera_t camera);
+extern csg_vec3_t csg_camera_get_right(csg_camera_t camera);
+extern void csg_camera_move_by(csg_camera_t* camera, float forward,
+                               float strafe, float jump);
 
-extern void csg_render(csg_node_t* root,
-                       csg_camera_t camera,
+extern void csg_render(csg_node_t* root, csg_camera_t camera,
                        csg_vec4_t clear_color);
 
 extern csg_geometry_t csg_geometry_none(void);

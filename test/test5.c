@@ -67,26 +67,22 @@ int main(int argc, char** argv) {
 
     if (adapter.keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
       camera.position.z--;
-      camera.target.z--;
     }
     if (adapter.keyboard[CSG_GUI_KEY_S] == CSG_GUI_PRESS) {
       camera.position.z++;
-      camera.target.z++;
     }
     if (adapter.keyboard[CSG_GUI_KEY_A] == CSG_GUI_PRESS) {
       camera.position.x--;
-      camera.target.x--;
     }
     if (adapter.keyboard[CSG_GUI_KEY_D] == CSG_GUI_PRESS) {
       camera.position.x++;
-      camera.target.x++;
     }
 
     if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
       if (adapter.mouse_deltax != 0)
-        camera.target.x += 0.1f * adapter.mouse_deltax;
+        camera.horizontal_angle += 0.1f * adapter.mouse_deltax;
       if (adapter.mouse_deltay != 0)
-        camera.target.y -= 0.1f * adapter.mouse_deltay;
+        camera.vertical_angle -= 0.1f * adapter.mouse_deltay;
     }
     if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_LEFT]) {
       if (adapter.mouse_deltax != 0)
