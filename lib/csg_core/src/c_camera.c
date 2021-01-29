@@ -42,7 +42,7 @@ csg_camera_t csg_camera_create(csg_projection_mode_e projection,
 csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera) {
   mat4s m;
   if (camera.projection == CSG_PROJECTION_PERSPECTIVE)
-    m = glms_perspective(glm_rad(camera.fov), camera.aspect, 0.1f, 100.0f);
+    m = glms_perspective(glm_rad(camera.fov), camera.aspect, 0.1f, 1000.0f);
   if (camera.projection == CSG_PROJECTION_ORTHOGRAPHIC)
     m = glms_ortho_default(camera.aspect);
   return *(csg_mat4_t*)&m;
