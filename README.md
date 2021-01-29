@@ -107,3 +107,4 @@ to be useful in some scenarios.
 
 ![window sharing](https://github.com/nbrk/csg/blob/master/doc/1.png?raw=true)
 ![window sharing](https://github.com/nbrk/csg/blob/master/doc/2.png?raw=true)
+![wavefront models](https://github.com/nbrk/csg/blob/master/doc/3.png?raw=true)
