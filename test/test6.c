@@ -36,15 +36,24 @@ int main(int argc, char** argv) {
   csg_gui_adapter_t adapter = csg_gui_adapter_create(
       csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
 
-  //  csg_geometry_t obj2_geometry = csg_geometry_create_from_wavefront(
-  //      "/usr/home/nbrk/Downloads/junk/models/2797_open3dmodel/castle/castle.obj");
   csg_geometry_t obj_geometry = csg_geometry_create_from_wavefront(
-      //      "/usr/home/nbrk/Downloads/junk/models/2797_open3dmodel/castle/castle.obj");
       "/usr/home/nbrk/Downloads/junk/meshes/FinalBaseMesh.obj");
-  //      "/usr/home/nbrk/Downloads/junk/meshes/bugatti/bugatti.obj");
-  //      "/usr/home/nbrk/Downloads/junk/meshes/FinalBaseMesh.obj");
-  //      "/usr/home/nbrk/Downloads/junk/meshes/091_W_Aya_100K.obj");
-  //      "/usr/home/nbrk/Downloads/junk/meshes/cornell_box.obj");
+  csg_geometry_t meshes[] = {
+      //      csg_geometry_create_from_wavefront(
+      //          "/usr/home/nbrk/Downloads/junk/meshes/obj/12140_Skull_v3_L2.obj"),
+      csg_geometry_create_from_wavefront(
+          "/usr/home/nbrk/Downloads/junk/meshes/obj/247_House 15_obj.obj"),
+      csg_geometry_create_from_wavefront(
+          "/usr/home/nbrk/Downloads/junk/meshes/obj/FinalBaseMesh.obj"),
+      //      csg_geometry_create_from_wavefront(
+      //          "/usr/home/nbrk/Downloads/junk/meshes/obj/Handgun_obj.obj"),
+      //      csg_geometry_create_from_wavefront(
+      //          "/usr/home/nbrk/Downloads/junk/meshes/obj/IronMan.obj"),
+      csg_geometry_create_from_wavefront(
+          "/usr/home/nbrk/Downloads/junk/meshes/obj/S.obj"),
+      //      csg_geometry_create_from_wavefront(
+      //          "/usr/home/nbrk/Downloads/junk/meshes/obj/castle.obj"),
+  };
 
   csg_geometry_t cube_geometry = csg_geometry_create_cube();
   csg_geometry_t tri_geometry = csg_geometry_create_triangle();
@@ -57,20 +66,16 @@ int main(int argc, char** argv) {
 
   // nodes
   csg_node_t* root = csg_node_create(NULL, NULL);
-  csg_node_t *node1, *node2;
-  {
-    node1 = csg_node_create(root, NULL);
-    node1->geometry = obj_geometry;
-    node1->geometry.material = material;
-    //    node1->transform.scale = (csg_vec3_t){0.01, 0.01, 0.01};
-    node1->geometry.material.diffuse_color.x = 0.43f;
-    node2 = csg_node_create(root, NULL);
-    //    node2->transform.translation.x = -2.0f;
-    //    node2->geometry = obj2_geometry;
-    //    node2->geometry.material = material;
-    //    node2->transform.scale = (csg_vec3_t){0.001, 0.001, 0.001};
-    //    node2->geometry.material.diffuse_color.z = 0.33f;
+  const size_t NUM_NODES = 3;
+  csg_node_t* nodes[NUM_NODES];
+  for (int i = 0; i < NUM_NODES; i++) {
+    nodes[i] = csg_node_create(root, NULL);
+    nodes[i]->transform.translation.x = i * 10;
+    nodes[i]->geometry = meshes[i];
+    nodes[i]->geometry.material = material;
+    nodes[i]->geometry.material.diffuse_color.x = 0.43f;
   }
+
   //  root->geometry.material = csg_material_create();
   //  root->geometry.material.diffuse_color = (csg_vec4_t){1.0f, 0.0f,
   //  0.0f, 1.0f}; root->geometry->material.diffuse_color = (csg_vec4_t){1.0f,
@@ -102,16 +107,22 @@ int main(int argc, char** argv) {
     }
 
     if (adapter.keyboard[CSG_GUI_KEY_1] == CSG_GUI_PRESS) {
-      node1->geometry.gl.polygon_mode = GL_POINT;
-      node2->geometry.gl.polygon_mode = GL_POINT;
+      for (int i = 0; i < NUM_NODES; i++) {
+        nodes[i]->geometry.gl.polygon_mode = GL_POINT;
+        nodes[i]->geometry.gl.polygon_mode = GL_POINT;
+      }
     }
     if (adapter.keyboard[CSG_GUI_KEY_2] == CSG_GUI_PRESS) {
-      node1->geometry.gl.polygon_mode = GL_LINE;
-      node2->geometry.gl.polygon_mode = GL_LINE;
+      for (int i = 0; i < NUM_NODES; i++) {
+        nodes[i]->geometry.gl.polygon_mode = GL_LINE;
+        nodes[i]->geometry.gl.polygon_mode = GL_LINE;
+      }
     }
     if (adapter.keyboard[CSG_GUI_KEY_3] == CSG_GUI_PRESS) {
-      node1->geometry.gl.polygon_mode = GL_FILL;
-      node2->geometry.gl.polygon_mode = GL_FILL;
+      for (int i = 0; i < NUM_NODES; i++) {
+        nodes[i]->geometry.gl.polygon_mode = GL_FILL;
+        nodes[i]->geometry.gl.polygon_mode = GL_FILL;
+      }
     }
 
     if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
