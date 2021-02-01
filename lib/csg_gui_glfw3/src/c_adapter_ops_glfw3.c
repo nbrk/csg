@@ -75,6 +75,10 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   adapter->mouse_deltay = (int)y - adapter->mouse_y;
   adapter->mouse_x = (int)x;
   adapter->mouse_y = (int)y;
+
+  // delta time
+  adapter->time_delta_sec = (float)glfwGetTime();
+  glfwSetTime(0.0);
 }
 static void glfw_adapter_begin_frame(csg_gui_adapter_t* adapter) {
   glfwMakeContextCurrent(adapter->backend_cookie);
@@ -139,6 +143,7 @@ static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
   adapter.mouse_deltay = INT_MAX;
   adapter.screen_width = width;
   adapter.screen_height = height;
+  adapter.time_delta_sec = 0.0f;
 
   // NOTE: no need to set the backend ops (will be set by csg_adapter_create() )
 

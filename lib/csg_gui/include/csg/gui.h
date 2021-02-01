@@ -222,6 +222,9 @@ struct csg_gui_adapter_t {
 
   // keyboard state
   char keyboard[CSG_GUI_NUM_KEYS];
+
+  // intra-frame time state
+  float time_delta_sec;
 };
 
 /******************************************************************************

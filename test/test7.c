@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
   node->geometry = octa_geometry;
   node->geometry.material = material;
 
+  const float CAMERA_SPEED = 10.f;
+
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
     csg_gui_adapter_update(&adapter);
 
@@ -55,16 +57,20 @@ int main(int argc, char** argv) {
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
 
     if (adapter.keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
-      csg_camera_move_by(&camera, 0.5f, 0.f, 0.0f);
+      csg_camera_move_by(&camera, CAMERA_SPEED * adapter.time_delta_sec, 0.f,
+                         0.0f);
     }
     if (adapter.keyboard[CSG_GUI_KEY_S] == CSG_GUI_PRESS) {
-      csg_camera_move_by(&camera, -0.5f, 0.f, 0.0f);
+      csg_camera_move_by(&camera, -CAMERA_SPEED * adapter.time_delta_sec, 0.f,
+                         0.0f);
     }
     if (adapter.keyboard[CSG_GUI_KEY_A] == CSG_GUI_PRESS) {
-      csg_camera_move_by(&camera, 0.f, -0.5f, 0.0f);
+      csg_camera_move_by(&camera, 0.f, -CAMERA_SPEED * adapter.time_delta_sec,
+                         0.0f);
     }
     if (adapter.keyboard[CSG_GUI_KEY_D] == CSG_GUI_PRESS) {
-      csg_camera_move_by(&camera, 0.f, 0.5f, 0.0f);
+      csg_camera_move_by(&camera, 0.f, CAMERA_SPEED * adapter.time_delta_sec,
+                         0.0f);
     }
     if (adapter.keyboard[CSG_GUI_KEY_PAGE_UP] == CSG_GUI_PRESS) {
       csg_camera_move_by(&camera, 0.f, 0.0f, 0.5f);
@@ -115,6 +121,8 @@ int main(int argc, char** argv) {
         root->transform.scale.z -= 0.01f * adapter.mouse_deltay;
       }
     }
+
+    printf("adapter.time_delta: %f\n", adapter.time_delta_sec);
 
     csg_gui_adapter_begin_frame(&adapter);
     { csg_render(root, camera, (csg_vec4_t){0.1f, 0.2f, 0.1f, 1.0f}); }
