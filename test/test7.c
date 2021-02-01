@@ -31,21 +31,82 @@
 
 #define rand(x) arc4random(x)
 
-int main(int argc, char** argv) {
-  //  csg_malloc_set_debug(true);
+static void logic(csg_node_t* root, csg_camera_t* camera,
+                  csg_gui_adapter_t* adapter) {
+  static const float CAMERA_SPEED = 1.f;
 
+  if (adapter->keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
+    adapter->flags |= CSG_GUI_FLAG_WANT_CLOSE;
+
+  if (adapter->keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, CAMERA_SPEED * adapter->last_frame_duration, 0.f,
+                       0.0f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_S] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, -CAMERA_SPEED * adapter->last_frame_duration,
+                       0.f, 0.0f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_A] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, 0.f,
+                       -CAMERA_SPEED * adapter->last_frame_duration, 0.0f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_D] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, 0.f, CAMERA_SPEED * adapter->last_frame_duration,
+                       0.0f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_PAGE_UP] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, 0.f, 0.0f, 0.5f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_PAGE_DOWN] == CSG_GUI_PRESS) {
+    csg_camera_move_by(camera, 0.f, 0.0f, -0.5f);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_LEFT_BRACKET] == CSG_GUI_PRESS) {
+    camera->far_plane -= 1.0f;
+    printf("Camera far plane: %f\n", camera->far_plane);
+  }
+  if (adapter->keyboard[CSG_GUI_KEY_RIGHT_BRACKET] == CSG_GUI_PRESS) {
+    camera->far_plane += 1.0f;
+    printf("Camera far plane: %f\n", camera->far_plane);
+  }
+
+  if (adapter->mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
+    if (1 || adapter->mouse_deltax != 0) {
+      camera->horizontal_angle -= 0.005f * adapter->mouse_deltax;
+    }
+    if (1 || adapter->mouse_deltay != 0) {
+      camera->vertical_angle -= 0.005f * adapter->mouse_deltay;
+    }
+  }
+  if (adapter->mouse[CSG_GUI_MOUSE_BUTTON_LEFT]) {
+    if (adapter->mouse_deltax != 0)
+      root->transform.rotation.y += 0.01f * adapter->mouse_deltax;
+    if (adapter->mouse_deltay != 0)
+      root->transform.rotation.x += 0.01f * adapter->mouse_deltay;
+  }
+  if (adapter->mouse[CSG_GUI_MOUSE_BUTTON_MIDDLE]) {
+    if (adapter->mouse_deltay != 0) {
+      root->transform.scale.x -= 0.01f * adapter->mouse_deltay;
+      root->transform.scale.y -= 0.01f * adapter->mouse_deltay;
+      root->transform.scale.z -= 0.01f * adapter->mouse_deltay;
+    }
+  }
+}
+
+int main(int argc, char** argv) {
   csg_gui_adapter_t adapter = csg_gui_adapter_create(
       csg_gui_glfw3_adapter_ops(), 0, 0, 1024, 768, 0, NULL);
 
-  csg_geometry_t octa_geometry = csg_geometry_create_quad();
+  csg_geometry_t quad_geometry = csg_geometry_create_quad();
+  csg_geometry_t tri_geometry = csg_geometry_create_triangle();
 
   csg_texture_t tex = csg_texture_create_from_image(
       "/usr/home/nbrk/Downloads/junk/meshes/Map001c.bmp", true);
+  csg_texture_t tex1 = csg_texture_create_from_image(
+      "/usr/home/nbrk/Downloads/junk/meshes/wood_damaged_0001_01.jpg", true);
+  csg_texture_t tex2 = csg_texture_create_from_image(
+      "/usr/home/nbrk/Downloads/junk/meshes/grass_grass_0130_01.jpg", true);
 
   csg_material_t material = csg_material_create();
-  material.texture = tex;
-  //  material.diffuse_color.y = 0.4f;
-  //  material.diffuse_color = (csg_vec4_t){1.0f, 1.0f, 1.0f, 1.0f};
 
   csg_camera_t camera = csg_camera_default();
   camera.position.z = 1.f;
@@ -54,88 +115,26 @@ int main(int argc, char** argv) {
   csg_node_t* root = csg_node_create(NULL, NULL);
 
   csg_node_t* node = csg_node_create(root, NULL);
-  node->geometry = octa_geometry;
+  node->geometry = quad_geometry;
   node->geometry.material = material;
-
-  const float CAMERA_SPEED = 1.f;
+  node->geometry.material.texture = tex;
+  csg_node_t* node1 = csg_node_create(root, NULL);
+  node1->transform.translation.x = 2.f;
+  node1->geometry = tri_geometry;
+  node1->geometry.material = material;
+  node1->geometry.material.diffuse_color = (csg_vec4_t){1.0f, 0.0f, 0.0f, 1.0f};
+  node1->geometry.material.texture = csg_texture_none();
+  csg_node_t* node2 = csg_node_create(root, NULL);
+  node2->transform.translation.x = -2.f;
+  node2->geometry = quad_geometry;
+  node2->geometry.material = material;
+  node2->geometry.material.texture = tex2;
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
     csg_gui_adapter_begin_frame(&adapter);
-
     {
-      if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
-        adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
-
-      if (adapter.keyboard[CSG_GUI_KEY_W] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, CAMERA_SPEED * adapter.last_frame_duration,
-                           0.f, 0.0f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_S] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, -CAMERA_SPEED * adapter.last_frame_duration,
-                           0.f, 0.0f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_A] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, 0.f,
-                           -CAMERA_SPEED * adapter.last_frame_duration, 0.0f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_D] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, 0.f,
-                           CAMERA_SPEED * adapter.last_frame_duration, 0.0f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_PAGE_UP] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, 0.f, 0.0f, 0.5f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_PAGE_DOWN] == CSG_GUI_PRESS) {
-        csg_camera_move_by(&camera, 0.f, 0.0f, -0.5f);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_LEFT_BRACKET] == CSG_GUI_PRESS) {
-        camera.far_plane -= 1.0f;
-        printf("Camera far plane: %f\n", camera.far_plane);
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_RIGHT_BRACKET] == CSG_GUI_PRESS) {
-        camera.far_plane += 1.0f;
-        printf("Camera far plane: %f\n", camera.far_plane);
-      }
-
-      if (adapter.keyboard[CSG_GUI_KEY_1] == CSG_GUI_PRESS) {
-        node->geometry.gl.polygon_mode = GL_POINT;
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_2] == CSG_GUI_PRESS) {
-        node->geometry.gl.polygon_mode = GL_LINE;
-      }
-      if (adapter.keyboard[CSG_GUI_KEY_3] == CSG_GUI_PRESS) {
-        node->geometry.gl.polygon_mode = GL_FILL;
-      }
-
-      if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
-        if (1 || adapter.mouse_deltax != 0) {
-          //        printf("adapter.mouse.delta{x, y} = %d, %d\n",
-          //        adapter.mouse_deltax,
-          //               adapter.mouse_deltay);
-          camera.horizontal_angle -= 0.005f * adapter.mouse_deltax;
-        }
-        if (1 || adapter.mouse_deltay != 0) {
-          camera.vertical_angle -= 0.005f * adapter.mouse_deltay;
-        }
-      }
-      if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_LEFT]) {
-        if (adapter.mouse_deltax != 0)
-          root->transform.rotation.y += 0.01f * adapter.mouse_deltax;
-        if (adapter.mouse_deltay != 0)
-          root->transform.rotation.x += 0.01f * adapter.mouse_deltay;
-      }
-      if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_MIDDLE]) {
-        if (adapter.mouse_deltay != 0) {
-          root->transform.scale.x -= 0.01f * adapter.mouse_deltay;
-          root->transform.scale.y -= 0.01f * adapter.mouse_deltay;
-          root->transform.scale.z -= 0.01f * adapter.mouse_deltay;
-        }
-      }
-
-      //      printf("adapter.last_frame_duration: %f\n",
-      //      adapter.last_frame_duration);
-
       csg_render(root, camera, (csg_vec4_t){0.1f, 0.2f, 0.1f, 1.0f});
+      logic(root, &camera, &adapter);
     }
     csg_gui_adapter_end_frame(&adapter, 120);
   }
