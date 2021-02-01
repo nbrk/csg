@@ -30,58 +30,60 @@ static csg_mat4_t from_glm_mat4s(mat4s m) { return *(csg_mat4_t*)&m; }
 
 static mat4s from_csg_mat4(csg_mat4_t m) { return *(mat4s*)&m; }
 
-static void do_render_node(csg_node_t* node, csg_mat4_t projection,
-                           csg_mat4_t view, csg_mat4_t model) {
-  //  printf("Render node %p, string cookie: %s\n", node, node->cookie);
-  //  assert(node->geometry != NULL);
-  assert(node->geometry.flags & CSG_FLAG_ENABLED);
-  assert(node->geometry.material.flags & CSG_FLAG_ENABLED);
-
-  glPolygonMode(GL_FRONT_AND_BACK, node->geometry.gl.polygon_mode);
-
+static void set_uniforms(csg_node_t* node, csg_mat4_t* projection,
+                         csg_mat4_t* view, csg_mat4_t* model) {
   // query the uniforms' locations
   GLuint program = node->geometry.material.gl_program;
   GLuint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");
   GLuint u_model = glGetUniformLocation(program, "u_model");
   GLuint u_view = glGetUniformLocation(program, "u_view");
   GLuint u_projection = glGetUniformLocation(program, "u_projection");
-  //  GLuint u_texture_unit = glGetUniformLocation(program, "u_");
+  GLint u_use_textures = glGetUniformLocation(program, "u_use_textures");
 
-  // set up the uniforms
-  glUseProgram(program);
   glUniform4fv(u_diffuse_color, 1,
                (GLfloat*)&node->geometry.material.diffuse_color);
-  glUniformMatrix4fv(u_model, 1, GL_FALSE, (GLfloat*)&model);
-  glUniformMatrix4fv(u_view, 1, GL_FALSE, (GLfloat*)&view);
-  glUniformMatrix4fv(u_projection, 1, GL_FALSE, (GLfloat*)&projection);
+  glUniformMatrix4fv(u_model, 1, GL_FALSE, (GLfloat*)model);
+  glUniformMatrix4fv(u_view, 1, GL_FALSE, (GLfloat*)view);
+  glUniformMatrix4fv(u_projection, 1, GL_FALSE, (GLfloat*)projection);
+  glUniform1i(u_use_textures,
+              (node->geometry.material.texture.flags & CSG_FLAG_ENABLED) != 0);
+}
 
-  // draw arrays / elements
-  if ((node->geometry.flags & CSG_GEOMETRY_FLAG_INDEXED_DRAW) != 0) {
-    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.ibo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(GLfloat) /* stride */,
-                          (const GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
+static void do_render_node(csg_node_t* node, csg_mat4_t projection,
+                           csg_mat4_t view, csg_mat4_t model) {
+  assert(node->geometry.flags & CSG_FLAG_ENABLED);
+  assert(node->geometry.material.flags & CSG_FLAG_ENABLED);
 
-    // see if the object has textures
-    if (node->geometry.material.texture.flags & CSG_FLAG_ENABLED) {
-      //      glActiveTexture(GL_TEXTURE0);  // activate the texture unit first
-      //    before binding texture
-      glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
-    } else
-      glBindTexture(GL_TEXTURE_2D, 0);
+  glUseProgram(node->geometry.material.gl_program);
 
-    glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_to_draw,
-                   GL_UNSIGNED_INT, NULL);
-  } else {
-    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glDrawArrays(node->geometry.gl.draw_mode, 0, node->geometry.num_to_draw);
-  }
+  /*
+   * Set uniforms
+   */
+  set_uniforms(node, &projection, &view, &model);
+
+  /*
+   * Setup vertex attributes streaming (via elements)
+   */
+  glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.ibo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+                        5 * sizeof(GLfloat) /* stride */,
+                        (const GLvoid*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+  /*
+   * Bind texture (either zero or a correct texo)
+   */
+  glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
+
+  /*
+   * Draw elements
+   */
+  glPolygonMode(GL_FRONT_AND_BACK, node->geometry.gl.polygon_mode);
+  glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_indices,
+                 GL_UNSIGNED_INT, NULL);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

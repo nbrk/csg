@@ -73,7 +73,7 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
-  geom.num_to_draw = attrib.num_faces;
+  geom.num_indices = attrib.num_faces;
 
   // VBO
   glGenBuffers(1, &geom.gl.vbo);
@@ -93,7 +93,6 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
                ibuffer, GL_STATIC_DRAW);
   csg_free(ibuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  geom.flags |= CSG_GEOMETRY_FLAG_INDEXED_DRAW;
 
   // free tiny obj memory
   tinyobj_attrib_free(&attrib);

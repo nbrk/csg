@@ -29,11 +29,9 @@ csg_geometry_t csg_geometry_none(void) {
   csg_geometry_t geom;
 
   geom.flags = 0;
-  geom.num_to_draw = 0;
+  geom.num_indices = 0;
   geom.gl.draw_mode = 0;
   geom.gl.vbo = 0;
-  //  geom.gl.texcoords_vbo = 0;
-  //  geom.gl.normals_vbo = 0;
   geom.gl.ibo = 0;
   geom.material = csg_material_none();
 
@@ -44,7 +42,7 @@ csg_geometry_t csg_geometry_create_triangle(void) {
   csg_geometry_t geom = csg_geometry_none();
 
   geom.flags = CSG_FLAG_ENABLED;
-  geom.num_to_draw = 3;
+  geom.num_indices = 3;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
@@ -63,8 +61,8 @@ csg_geometry_t csg_geometry_create_triangle(void) {
 csg_geometry_t csg_geometry_create_cube(void) {
   csg_geometry_t geom = csg_geometry_none();
 
-  geom.flags = CSG_FLAG_ENABLED | CSG_GEOMETRY_FLAG_INDEXED_DRAW;
-  geom.num_to_draw = 36;  // XXX
+  geom.flags = CSG_FLAG_ENABLED;
+  geom.num_indices = 36;  // XXX
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
@@ -157,7 +155,7 @@ csg_geometry_t csg_geometry_create_sphere(int gradation) {
   }
 
   // hardware
-  geom.num_to_draw = num_vertices;
+  geom.num_indices = num_vertices;
 
   glGenBuffers(1, &geom.gl.vbo);
   glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
@@ -189,22 +187,13 @@ csg_geometry_t csg_geometry_create_quad(void) {
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  //  glGenBuffers(1, &geom.gl.texcoords_vbo);
-  //  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.texcoords_vbo);
-  //  glBufferData(GL_ARRAY_BUFFER, 4 * 2 /* s,t */ * sizeof(GLfloat),
-  //               (float[8]){0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f},
-  //               GL_STATIC_DRAW);
-  //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
   glGenBuffers(1, &geom.gl.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                (3 /* trig 1 */ + 3 /* trig 2 */) * sizeof(GLuint),
                (GLuint[6]){0, 1, 2, 0, 2, 3}, GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  geom.num_to_draw = 6;
-  geom.flags |= CSG_GEOMETRY_FLAG_INDEXED_DRAW;
+  geom.num_indices = 6;
 
   return geom;
 }

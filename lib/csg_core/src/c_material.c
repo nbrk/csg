@@ -25,6 +25,26 @@
 #include <stdio.h>
 #include <string.h>
 
+static size_t file_get_size(FILE* fp) {
+  size_t curpos = ftell(fp);
+  fseek(fp, 0, SEEK_END);
+  size_t endpos = ftell(fp);
+  fseek(fp, curpos, SEEK_SET);
+  return endpos;
+}
+
+static char* file_get_contents(FILE* fp) {
+  size_t sourcelen = file_get_size(fp);
+  char* source = csg_malloc(sourcelen + 1);
+  size_t nobjs = fread(source, sourcelen, 1, fp);
+
+  if (nobjs != 1) {
+    csg_free(source);
+    return NULL;
+  } else
+    return source;
+}
+
 static const char* default_vertex_src =
     "#version 330\n"
     "layout(location = 0) in vec3 a_position;\n"
@@ -32,7 +52,7 @@ static const char* default_vertex_src =
     "uniform mat4 u_model;\n"
     "uniform mat4 u_view;\n"
     "uniform mat4 u_projection;\n"
-    "out vec2 o_uv;"
+    "out vec2 o_uv;\n"
     "void main()\n"
     "{\n"
     "gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0);\n"
@@ -43,12 +63,14 @@ static const char* default_fragment_src =
     "#version 330\n"
     "in vec2 o_uv;\n"
     "uniform vec4 u_diffuse_color;\n"
-    "uniform sampler2D u_sampler;\n"
+    "uniform bool u_use_textures;\n"
+    "uniform sampler2D u_texture_unit;\n"
     "void main()\n"
     "{\n"
-    "//gl_FragColor = u_diffuse_color;\n"
-    "gl_FragColor = texture(u_sampler, o_uv) * vec4(u_diffuse_color);\n"
-    "//gl_FragColor = texture(u_sampler, o_uv);\n"
+    "if (u_use_textures == true)\n"
+    "gl_FragColor = texture(u_texture_unit, o_uv) * vec4(u_diffuse_color);\n"
+    "else\n"
+    "gl_FragColor = u_diffuse_color;\n"
     "}\n"
     "\n";
 

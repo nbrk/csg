@@ -36,7 +36,6 @@
  * CONSTANTS/ENUMS
  */
 #define CSG_FLAG_ENABLED 1
-#define CSG_GEOMETRY_FLAG_INDEXED_DRAW 2
 
 typedef enum {
   CSG_TRAVERSE_ONLY_SELF,
@@ -106,13 +105,11 @@ typedef struct {
 // TODO: geometry system
 typedef struct {
   int flags;
-  int num_to_draw;
+  int num_indices;
   struct {
     GLenum draw_mode;
     GLenum polygon_mode;
     GLuint vbo;
-    //    GLuint texcoords_vbo;
-    //    GLuint normals_vbo;
     GLuint ibo;
   } gl;
   csg_material_t material;
