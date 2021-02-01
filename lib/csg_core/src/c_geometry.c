@@ -42,19 +42,25 @@ csg_geometry_t csg_geometry_create_triangle(void) {
   csg_geometry_t geom = csg_geometry_none();
 
   geom.flags = CSG_FLAG_ENABLED;
-  geom.num_indices = 3;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
 
   glGenBuffers(1, &geom.gl.vbo);
   glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
-  glBufferData(
-      GL_ARRAY_BUFFER, 9 * sizeof(GLfloat),
-      (float[9]){-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f},
-      GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBufferData(GL_ARRAY_BUFFER, 15 * sizeof(GLfloat),
+               (float[15]){-0.5f, -0.5f, 0.0f, 0.f, 0.f, 0.0f, 0.5f, 0.0f, 0.5f,
+                           1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f},
+               GL_STATIC_DRAW);
 
+  glGenBuffers(1, &geom.gl.ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 /* trig 1 */ * sizeof(GLuint),
+               (GLuint[3]){0, 1, 2}, GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  geom.num_indices = 3;
   return geom;
 }
 
