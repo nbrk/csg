@@ -102,9 +102,13 @@ int main(int argc, char** argv) {
   csg_texture_t tex = csg_texture_create_from_image(
       "/usr/home/nbrk/Downloads/junk/meshes/Map001c.bmp", true);
   csg_texture_t tex1 = csg_texture_create_from_image(
-      "/usr/home/nbrk/Downloads/junk/meshes/wood_damaged_0001_01.jpg", true);
+      "/usr/home/nbrk/Downloads/junk/meshes/"
+      "wildtextures_vintage-wood-planks-yellow-peeling-paint.jpg",
+      false);
   csg_texture_t tex2 = csg_texture_create_from_image(
-      "/usr/home/nbrk/Downloads/junk/meshes/grass_grass_0130_01.jpg", true);
+      "/usr/home/nbrk/Downloads/junk/meshes/"
+      "photos_2021_1_20_fst_creased-paper.jpg",
+      false);
 
   csg_material_t material = csg_material_create();
 
@@ -122,13 +126,14 @@ int main(int argc, char** argv) {
   node1->transform.translation.x = 2.f;
   node1->geometry = tri_geometry;
   node1->geometry.material = material;
-  node1->geometry.material.diffuse_color = (csg_vec4_t){1.0f, 0.0f, 0.0f, 1.0f};
-  node1->geometry.material.texture = csg_texture_none();
+  //  node1->geometry.material.diffuse_color = (csg_vec4_t){1.0f, 0.0f,
+  //  0.0f, 1.0f};
+  node1->geometry.material.texture = tex2;
   csg_node_t* node2 = csg_node_create(root, NULL);
   node2->transform.translation.x = -2.f;
   node2->geometry = quad_geometry;
   node2->geometry.material = material;
-  node2->geometry.material.texture = tex2;
+  node2->geometry.material.texture = tex1;
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
     csg_gui_adapter_begin_frame(&adapter);
