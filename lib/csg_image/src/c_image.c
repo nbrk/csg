@@ -37,7 +37,6 @@ csg_texture_t csg_texture_create_from_image(const char* path, bool vert_flip) {
   printf("Loaded image: %s, size %d x %d\n", path, width, height);
 
   csg_texture_t tex;
-
   tex.flags = CSG_FLAG_ENABLED;
 
   glGenTextures(1, &tex.gl.texo);
