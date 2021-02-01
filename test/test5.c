@@ -57,9 +57,6 @@ int main(int argc, char** argv) {
   csg_camera_t camera = csg_camera_default();
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
-    //    csg_gui_adapter_update(&adapter);
-    //    csg_gui_adapter_update(&adapter2);
-
     if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
     if (adapter2.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
@@ -120,7 +117,7 @@ int main(int argc, char** argv) {
       }
       nk_end(adapter.nk);
     }
-    csg_gui_adapter_end_frame(&adapter);
+    csg_gui_adapter_end_frame(&adapter, 0);
 
     csg_gui_adapter_begin_frame(&adapter2);
     {
@@ -145,7 +142,7 @@ int main(int argc, char** argv) {
       }
       nk_end(adapter2.nk);
     }
-    csg_gui_adapter_end_frame(&adapter2);
+    csg_gui_adapter_end_frame(&adapter2, 60);
   }
 
   csg_malloc_print_stat();

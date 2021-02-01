@@ -137,10 +137,7 @@ int main(int argc, char** argv) {
 
       csg_render(root, camera, (csg_vec4_t){0.1f, 0.2f, 0.1f, 1.0f});
     }
-    csg_gui_adapter_end_frame(&adapter);
-
-    if (adapter.last_frame_duration < 1.0 / 120.0)
-      usleep((1.0 / 120.0 - adapter.last_frame_duration) * 1000000);
+    csg_gui_adapter_end_frame(&adapter, 120);
   }
 
   return 0;

@@ -238,4 +238,11 @@ extern csg_gui_adapter_t csg_gui_adapter_duplicate(
     csg_gui_adapter_t dup_adapter, int width, int height, int x_pos, int y_pos);
 extern void csg_gui_adapter_destroy(csg_gui_adapter_t* adapter);
 extern void csg_gui_adapter_begin_frame(csg_gui_adapter_t* adapter);
-extern void csg_gui_adapter_end_frame(csg_gui_adapter_t* adapter);
+/**
+ * @brief End conceptual frame for the adapter
+ * @param adapter
+ * @param wait_fps if greater than zero, try to sleep after the frame end to
+ * achieve the target FPS performance
+ */
+extern void csg_gui_adapter_end_frame(csg_gui_adapter_t* adapter,
+                                      int target_fps);

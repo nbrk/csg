@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <csg/gui.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 csg_gui_adapter_t csg_gui_adapter_create(csg_gui_adapter_ops_t backend_ops,
                                          int x_pos, int y_pos, int width,
@@ -47,7 +48,14 @@ void csg_gui_adapter_begin_frame(csg_gui_adapter_t* adapter) {
   adapter->ops.begin_frame_func(adapter);
 }
 
-void csg_gui_adapter_end_frame(csg_gui_adapter_t* adapter) {
+void csg_gui_adapter_end_frame(csg_gui_adapter_t* adapter, int target_fps) {
   assert(adapter->ops.end_frame_func != NULL);
   adapter->ops.end_frame_func(adapter);
+
+  // FPS cap if the limit is given
+  if (target_fps > 0) {
+    // sleep if we have unused fraction of the (theoretical) frame left
+    if (adapter->last_frame_duration < 1.0 / target_fps)
+      usleep((1.0 / target_fps - adapter->last_frame_duration) * 1000000);
+  }
 }

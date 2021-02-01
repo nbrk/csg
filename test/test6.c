@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 
     csg_gui_adapter_begin_frame(&adapter);
     { csg_render(root, camera, (csg_vec4_t){0.2f, 0.2f, 0.3f, 1.0f}); }
-    csg_gui_adapter_end_frame(&adapter);
+    csg_gui_adapter_end_frame(&adapter, 60);
   }
 
   return 0;
