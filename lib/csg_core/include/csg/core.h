@@ -84,6 +84,8 @@ typedef struct {
   float vertical_angle;    // pitch
   float fov;
   float aspect;
+  float near_plane;
+  float far_plane;
 } csg_camera_t;
 
 // TODO: material system
@@ -92,6 +94,13 @@ typedef struct {
   csg_vec4_t diffuse_color;
   unsigned gl_program;
 } csg_material_t;
+
+// typedef struct {
+//  struct {
+//    unsigned texo;  // texture object (texture ID)
+//    // TODO
+//  } gl;
+//} csg_texture_t;
 
 // TODO: geometry system
 typedef struct {

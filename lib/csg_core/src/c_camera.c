@@ -35,6 +35,8 @@ csg_camera_t csg_camera_create(csg_projection_mode_e projection,
   camera.vertical_angle = vert_angle;
   camera.aspect = aspect;
   camera.fov = fov;
+  camera.near_plane = 0.1f;
+  camera.far_plane = 1000.0f;
 
   return camera;
 }
@@ -42,7 +44,8 @@ csg_camera_t csg_camera_create(csg_projection_mode_e projection,
 csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera) {
   mat4s m;
   if (camera.projection == CSG_PROJECTION_PERSPECTIVE)
-    m = glms_perspective(glm_rad(camera.fov), camera.aspect, 0.1f, 1000.0f);
+    m = glms_perspective(glm_rad(camera.fov), camera.aspect, camera.near_plane,
+                         camera.far_plane);
   if (camera.projection == CSG_PROJECTION_ORTHOGRAPHIC)
     m = glms_ortho_default(camera.aspect);
   return *(csg_mat4_t*)&m;

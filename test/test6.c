@@ -105,6 +105,14 @@ int main(int argc, char** argv) {
     if (adapter.keyboard[CSG_GUI_KEY_PAGE_DOWN] == CSG_GUI_PRESS) {
       csg_camera_move_by(&camera, 0.f, 0.0f, -0.5f);
     }
+    if (adapter.keyboard[CSG_GUI_KEY_LEFT_BRACKET] == CSG_GUI_PRESS) {
+      camera.far_plane -= 1.0f;
+      printf("Camera far plane: %f\n", camera.far_plane);
+    }
+    if (adapter.keyboard[CSG_GUI_KEY_RIGHT_BRACKET] == CSG_GUI_PRESS) {
+      camera.far_plane += 1.0f;
+      printf("Camera far plane: %f\n", camera.far_plane);
+    }
 
     if (adapter.keyboard[CSG_GUI_KEY_1] == CSG_GUI_PRESS) {
       for (int i = 0; i < NUM_NODES; i++) {
@@ -127,8 +135,9 @@ int main(int argc, char** argv) {
 
     if (adapter.mouse[CSG_GUI_MOUSE_BUTTON_RIGHT]) {
       if (1 || adapter.mouse_deltax != 0) {
-        printf("adapter.mouse.delta{x, y} = %d, %d\n", adapter.mouse_deltax,
-               adapter.mouse_deltay);
+        //        printf("adapter.mouse.delta{x, y} = %d, %d\n",
+        //        adapter.mouse_deltax,
+        //               adapter.mouse_deltay);
         camera.horizontal_angle -= 0.005f * adapter.mouse_deltax;
       }
       if (1 || adapter.mouse_deltay != 0) {
