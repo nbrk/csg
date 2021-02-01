@@ -36,11 +36,11 @@ csg_texture_t csg_texture_create_from_image(const char* path, bool vert_flip) {
 
   printf("Loaded image: %s, size %d x %d\n", path, width, height);
 
-  csg_texture_t tex;
-  tex.flags = CSG_FLAG_ENABLED;
+  csg_texture_t texture;
+  texture.flags = CSG_FLAG_ENABLED;
 
-  glGenTextures(1, &tex.gl.texo);
-  glBindTexture(GL_TEXTURE_2D, tex.gl.texo);
+  glGenTextures(1, &texture.gl.texo);
+  glBindTexture(GL_TEXTURE_2D, texture.gl.texo);
   // feed it to the hardware
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, data);
@@ -52,5 +52,5 @@ csg_texture_t csg_texture_create_from_image(const char* path, bool vert_flip) {
                   GL_LINEAR_MIPMAP_LINEAR);
 
   stbi_image_free(data);
-  return csg_texture_none();
+  return texture;
 }
