@@ -193,7 +193,6 @@ struct csg_gui_adapter_ops_t {
   csg_gui_adapter_t (*create_func)(int x_pos, int y_pos, int width, int height,
                                    int flags, void* shared_cookie);
   void (*destroy_func)(csg_gui_adapter_t* adapter);
-  void (*update_func)(csg_gui_adapter_t* adapter);
   void (*begin_frame_func)(csg_gui_adapter_t* adapter);
   void (*end_frame_func)(csg_gui_adapter_t* adapter);
 };
@@ -224,7 +223,8 @@ struct csg_gui_adapter_t {
   char keyboard[CSG_GUI_NUM_KEYS];
 
   // intra-frame time state
-  float time_delta_sec;
+  //  float time_delta_sec;
+  double last_frame_duration;
 };
 
 /******************************************************************************
@@ -237,6 +237,5 @@ extern csg_gui_adapter_t csg_gui_adapter_create(
 extern csg_gui_adapter_t csg_gui_adapter_duplicate(
     csg_gui_adapter_t dup_adapter, int width, int height, int x_pos, int y_pos);
 extern void csg_gui_adapter_destroy(csg_gui_adapter_t* adapter);
-extern void csg_gui_adapter_update(csg_gui_adapter_t* adapter);
 extern void csg_gui_adapter_begin_frame(csg_gui_adapter_t* adapter);
 extern void csg_gui_adapter_end_frame(csg_gui_adapter_t* adapter);

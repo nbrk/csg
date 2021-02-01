@@ -28,15 +28,20 @@
 #include <limits.h>
 #include <stdio.h>
 
-static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
+static void poll_events(csg_gui_adapter_t* adapter) {
   glfwPollEvents();
 
+  /*
+   * Read important window events
+   */
   GLFWwindow* window = adapter->backend_cookie;
   if (glfwWindowShouldClose(window) == GLFW_TRUE) {
     adapter->flags |= CSG_GUI_FLAG_WANT_CLOSE;
   }
 
-  // read keyboard state from the backend
+  /*
+   * Read keyboard state from the backend
+   */
   // NOTE: assuming full compatibility between csg_gui and glfw key/mouse button
   for (size_t i = 0; i <= CSG_GUI_NUM_KEYS; i++) {
     int glfw_state = glfwGetKey(window, i);
@@ -60,7 +65,9 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
     adapter->keyboard[i] = state;
   }
 
-  // read mouse state from the backend
+  /*
+   * Read mouse state from the backend
+   */
   for (size_t i = 0; i <= CSG_GUI_NUM_MOUSE_BUTTONS; i++)
     adapter->mouse[i] = glfwGetMouseButton(window, i);
   double x, y;
@@ -75,14 +82,12 @@ static void glfw_adapter_update(csg_gui_adapter_t* adapter) {
   adapter->mouse_deltay = (int)y - adapter->mouse_y;
   adapter->mouse_x = (int)x;
   adapter->mouse_y = (int)y;
-
-  // delta time
-  adapter->time_delta_sec = (float)glfwGetTime();
-  glfwSetTime(0.0);
 }
+
 static void glfw_adapter_begin_frame(csg_gui_adapter_t* adapter) {
   glfwMakeContextCurrent(adapter->backend_cookie);
-  // no ther preparations before the drawing...
+  adapter->last_frame_duration = glfwGetTime();
+  glfwSetTime(0.0);
 
   nk_glfw3_new_frame(adapter->ui_cookie);
 }
@@ -91,10 +96,13 @@ static void glfw_adapter_end_frame(csg_gui_adapter_t* adapter) {
   nk_glfw3_render(adapter->ui_cookie, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER,
                   MAX_ELEMENT_BUFFER);
 
-  // TODO: restore GL state to ours after the Nuklear
+  // FIXME: restore OpenGL state to ours after the Nuklear
   glEnable(GL_DEPTH_TEST);
 
   glfwSwapBuffers(adapter->backend_cookie);
+
+  // populate the adapter's inputs/flags
+  poll_events(adapter);
 }
 
 static void glfw_adapter_destroy(csg_gui_adapter_t* adapter) {
@@ -143,9 +151,12 @@ static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
   adapter.mouse_deltay = INT_MAX;
   adapter.screen_width = width;
   adapter.screen_height = height;
-  adapter.time_delta_sec = 0.0f;
+  adapter.last_frame_duration = 0.0;
 
-  // NOTE: no need to set the backend ops (will be set by csg_adapter_create() )
+  poll_events(&adapter);
+
+  // NOTE: no need to set the backend ops (will be set by higher level
+  // csg_adapter_create() )
 
   // create default UI/Nuklear context and set up the UI cookie
   struct nk_glfw* nk_glfw = csg_malloc(sizeof(*nk_glfw));
@@ -162,7 +173,6 @@ static csg_gui_adapter_t glfw_adapter_create(int x_pos, int y_pos, int width,
 csg_gui_adapter_ops_t csg_gui_glfw3_adapter_ops(void) {
   csg_gui_adapter_ops_t glfw3_adapter_ops = {
       .create_func = glfw_adapter_create,
-      .update_func = glfw_adapter_update,
       .destroy_func = glfw_adapter_destroy,
       .begin_frame_func = glfw_adapter_begin_frame,
       .end_frame_func = glfw_adapter_end_frame};

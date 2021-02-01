@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
   //  0.7f,
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
-    csg_gui_adapter_update(&adapter);
+    //    csg_gui_adapter_update(&adapter);
 
     if (adapter.keyboard[CSG_GUI_KEY_ESCAPE] == CSG_GUI_PRESS)
       adapter.flags |= CSG_GUI_FLAG_WANT_CLOSE;
