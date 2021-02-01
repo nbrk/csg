@@ -35,10 +35,8 @@
  *
  * CONSTANTS/ENUMS
  */
-#define CSG_GEOMETRY_FLAG_ENABLED 1
+#define CSG_FLAG_ENABLED 1
 #define CSG_GEOMETRY_FLAG_INDEXED_DRAW 2
-
-#define CSG_MATERIAL_FLAG_ENABLED 1
 
 typedef enum {
   CSG_TRAVERSE_ONLY_SELF,
@@ -88,19 +86,22 @@ typedef struct {
   float far_plane;
 } csg_camera_t;
 
+// TODO: textures
+typedef struct {
+  int flags;
+  struct {
+    unsigned texo;  // texture object (texture ID)
+    // TODO
+  } gl;
+} csg_texture_t;
+
 // TODO: material system
 typedef struct {
   int flags;
+  csg_texture_t texture;
   csg_vec4_t diffuse_color;
   unsigned gl_program;
 } csg_material_t;
-
-// typedef struct {
-//  struct {
-//    unsigned texo;  // texture object (texture ID)
-//    // TODO
-//  } gl;
-//} csg_texture_t;
 
 // TODO: geometry system
 typedef struct {
@@ -109,12 +110,10 @@ typedef struct {
   struct {
     GLenum draw_mode;
     GLenum polygon_mode;
-    GLuint vertices_vbo;
-    GLuint vertices_ibo;
-    GLuint texcoords_vbo;
-    GLuint texcoords_ibo;
-    GLuint normals_vbo;
-    GLuint normals_ibo;
+    GLuint vbo;
+    //    GLuint texcoords_vbo;
+    //    GLuint normals_vbo;
+    GLuint ibo;
   } gl;
   csg_material_t material;
 } csg_geometry_t;
@@ -177,6 +176,8 @@ extern csg_geometry_t csg_geometry_create_cube(void);
 extern csg_geometry_t csg_geometry_create_octahedron(void);
 extern csg_geometry_t csg_geometry_create_sphere(int gradation);
 extern csg_geometry_t csg_geometry_create_quad(void);
+
+extern csg_texture_t csg_texture_none(void);
 
 extern csg_material_t csg_material_create(void);
 extern csg_material_t csg_material_none(void);

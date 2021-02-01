@@ -24,6 +24,7 @@
 #include <csg/core.h>
 #include <csg/gui.h>
 #include <csg/gui_glfw3.h>
+#include <csg/image.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -37,9 +38,16 @@ int main(int argc, char** argv) {
 
   csg_geometry_t octa_geometry = csg_geometry_create_quad();
 
+  csg_texture_t tex = csg_texture_create_from_image(
+      "/usr/home/nbrk/Downloads/junk/meshes/Map001c.bmp", true);
+
   csg_material_t material = csg_material_create();
-  material.diffuse_color.y = 0.4f;
+  material.texture = tex;
+  //  material.diffuse_color.y = 0.4f;
+  //  material.diffuse_color = (csg_vec4_t){1.0f, 1.0f, 1.0f, 1.0f};
+
   csg_camera_t camera = csg_camera_default();
+  camera.position.z = 1.f;
 
   // nodes
   csg_node_t* root = csg_node_create(NULL, NULL);
@@ -48,7 +56,7 @@ int main(int argc, char** argv) {
   node->geometry = octa_geometry;
   node->geometry.material = material;
 
-  const float CAMERA_SPEED = 10.f;
+  const float CAMERA_SPEED = 1.f;
 
   while ((adapter.flags & CSG_GUI_FLAG_WANT_CLOSE) == 0) {
     csg_gui_adapter_update(&adapter);

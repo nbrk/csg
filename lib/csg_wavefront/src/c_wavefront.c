@@ -20,20 +20,16 @@
  * IN THE SOFTWARE.
  */
 
-#include <csg/wavefront.h>
-
 #include <assert.h>
+#include <csg/wavefront.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "internal_tinyobj_loader_c.h"
 
-static void loadFile(const char* filename,
-                     const int is_mtl,
-                     const char* obj_filename,
-                     char** buffer,
-                     size_t* len) {
+static void loadFile(const char* filename, const int is_mtl,
+                     const char* obj_filename, char** buffer, size_t* len) {
   long string_size = 0, read_size = 0;
   FILE* handler = fopen(filename, "r");
 
@@ -73,15 +69,15 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
   assert(result == TINYOBJ_SUCCESS);
 
   csg_geometry_t geom = csg_geometry_none();
-  geom.flags = CSG_GEOMETRY_FLAG_ENABLED;
+  geom.flags = CSG_FLAG_ENABLED;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
   geom.num_to_draw = attrib.num_faces;
 
   // VBO
-  glGenBuffers(1, &geom.gl.vertices_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vertices_vbo);
+  glGenBuffers(1, &geom.gl.vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
   glBufferData(GL_ARRAY_BUFFER, attrib.num_vertices * sizeof(GLfloat) * 3,
                attrib.vertices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -91,8 +87,8 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
   for (unsigned int i = 0; i < attrib.num_faces; i++) {
     ibuffer[i] = attrib.faces[i].v_idx;
   }
-  glGenBuffers(1, &geom.gl.vertices_ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.vertices_ibo);
+  glGenBuffers(1, &geom.gl.ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, attrib.num_faces * sizeof(GLuint),
                ibuffer, GL_STATIC_DRAW);
   csg_free(ibuffer);
@@ -101,10 +97,8 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
 
   // free tiny obj memory
   tinyobj_attrib_free(&attrib);
-  if (shape)
-    tinyobj_shapes_free(shape, num_shapes);
-  if (material)
-    tinyobj_materials_free(material, num_materials);
+  if (shape) tinyobj_shapes_free(shape, num_shapes);
+  if (material) tinyobj_materials_free(material, num_materials);
 
   return geom;
 }

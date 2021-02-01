@@ -28,25 +28,31 @@
 static const char* default_vertex_src =
     "#version 330\n"
     "layout(location = 0) in vec3 a_position;\n"
+    "layout(location = 1) in vec2 a_uv;\n"
     "uniform mat4 u_model;\n"
     "uniform mat4 u_view;\n"
     "uniform mat4 u_projection;\n"
+    "out vec2 o_uv;"
     "void main()\n"
     "{\n"
     "gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0);\n"
+    "o_uv = a_uv;\n"
     "}\n"
     "\n";
 static const char* default_fragment_src =
     "#version 330\n"
+    "in vec2 o_uv;\n"
     "uniform vec4 u_diffuse_color;\n"
+    "uniform sampler2D u_sampler;\n"
     "void main()\n"
     "{\n"
-    "gl_FragColor = u_diffuse_color;\n"
+    "//gl_FragColor = u_diffuse_color;\n"
+    "gl_FragColor = texture(u_sampler, o_uv) * vec4(u_diffuse_color);\n"
+    "//gl_FragColor = texture(u_sampler, o_uv);\n"
     "}\n"
     "\n";
 
-static int program_add_shader(GLuint program,
-                              GLenum shader_type,
+static int program_add_shader(GLuint program, GLenum shader_type,
                               const char* shader_src) {
   GLuint shader = glCreateShader(shader_type);
   const GLchar* source[1] = {shader_src};
@@ -118,8 +124,9 @@ csg_material_t csg_material_create(void) {
 
   csg_material_t mtrl;
 
-  mtrl.flags = CSG_MATERIAL_FLAG_ENABLED;
+  mtrl.flags = CSG_FLAG_ENABLED;
   mtrl.diffuse_color = (csg_vec4_t){1.0f, 1.0f, 1.0f, 1.0f};
+  mtrl.texture = csg_texture_none();
   mtrl.gl_program = program;
 
   return mtrl;
@@ -130,6 +137,7 @@ csg_material_t csg_material_none(void) {
 
   mtrl.flags = 0;
   mtrl.diffuse_color = (csg_vec4_t){0.0f, 0.0f, 0.0f, 0.0f};
+  mtrl.texture = csg_texture_none();
   mtrl.gl_program = 0;
 
   return mtrl;
