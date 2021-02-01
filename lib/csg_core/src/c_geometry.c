@@ -129,7 +129,6 @@ csg_geometry_t csg_geometry_create_sphere(int gradation) {
   const float PI = 3.141592f;
   GLfloat x, y, z, alpha, beta;  // Storage for coordinates and angles
   GLfloat radius = 1.0f;
-  gradation = 50;
 
   float* vertex_data = NULL;
   size_t num_vertices = 0;
@@ -173,4 +172,31 @@ csg_geometry_t csg_geometry_create_sphere(int gradation) {
 
 csg_geometry_t csg_geometry_create_octahedron(void) {
   return csg_geometry_create_sphere(2);
+}
+
+csg_geometry_t csg_geometry_create_quad(void) {
+  csg_geometry_t geom = csg_geometry_none();
+
+  geom.flags = CSG_GEOMETRY_FLAG_ENABLED;
+  geom.num_to_draw = 6;
+  geom.gl.draw_mode = GL_TRIANGLES;
+  geom.gl.polygon_mode = GL_FILL;
+  geom.material = csg_material_none();
+
+  glGenBuffers(1, &geom.gl.vertices_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vertices_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 4 * 3 /* x,y,z */ * sizeof(GLfloat),
+               (float[12]){-0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f,
+                           0.0f, 0.5f, -0.5f, 0.0f},
+               GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glGenBuffers(1, &geom.gl.vertices_ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.vertices_ibo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               (3 /* trig 1 */ + 3 /* trig 2 */) * sizeof(GLuint),
+               (GLuint[6]){0, 1, 2, 0, 2, 3}, GL_STATIC_DRAW);
+  geom.flags |= CSG_GEOMETRY_FLAG_INDEXED_DRAW;
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  return geom;
 }

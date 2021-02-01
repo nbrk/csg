@@ -176,6 +176,7 @@ extern csg_geometry_t csg_geometry_create_triangle(void);
 extern csg_geometry_t csg_geometry_create_cube(void);
 extern csg_geometry_t csg_geometry_create_octahedron(void);
 extern csg_geometry_t csg_geometry_create_sphere(int gradation);
+extern csg_geometry_t csg_geometry_create_quad(void);
 
 extern csg_material_t csg_material_create(void);
 extern csg_material_t csg_material_none(void);
