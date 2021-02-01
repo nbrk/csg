@@ -71,7 +71,8 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
       //      glActiveTexture(GL_TEXTURE0);  // activate the texture unit first
       //    before binding texture
       glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
-    }
+    } else
+      glBindTexture(GL_TEXTURE_2D, 0);
 
     glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_to_draw,
                    GL_UNSIGNED_INT, NULL);
