@@ -37,6 +37,12 @@
  */
 #define CSG_FLAG_ENABLED 1
 
+#define CSG_GEOMETRY_FLAG_HAS_POSITION_DATA 2
+#define CSG_GEOMETRY_FLAG_HAS_NORMAL_DATA 4
+#define CSG_GEOMETRY_FLAG_HAS_TEXCOORD_DATA 8
+#define CSG_GEOMETRY_FLAG_HAS_COLOR_DATA 16
+#define CSG_GEOMETRY_FLAG_HAS_INDICES 32
+
 typedef enum {
   CSG_TRAVERSE_ONLY_SELF,
   CSG_TRAVERSE_ONLY_CHILDREN,
@@ -102,15 +108,17 @@ typedef struct {
   unsigned gl_program;
 } csg_material_t;
 
-// TODO: geometry system
 typedef struct {
   int flags;
   int num_indices;
   struct {
     GLenum draw_mode;
     GLenum polygon_mode;
-    GLuint vbo;
     GLuint ibo;
+    GLuint position_vbo;
+    GLuint normal_vbo;
+    GLuint texcoord_vbo;
+    GLuint color_vbo;
   } gl;
   csg_material_t material;
 } csg_geometry_t;

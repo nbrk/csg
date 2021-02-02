@@ -31,7 +31,10 @@ csg_geometry_t csg_geometry_none(void) {
   geom.flags = 0;
   geom.num_indices = 0;
   geom.gl.draw_mode = 0;
-  geom.gl.vbo = 0;
+  geom.gl.position_vbo = 0;
+  geom.gl.normal_vbo = 0;
+  geom.gl.texcoord_vbo = 0;
+  geom.gl.color_vbo = 0;
   geom.gl.ibo = 0;
   geom.material = csg_material_none();
 
@@ -45,22 +48,34 @@ csg_geometry_t csg_geometry_create_triangle(void) {
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
+  geom.num_indices = 3;
 
-  glGenBuffers(1, &geom.gl.vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
-  glBufferData(GL_ARRAY_BUFFER, 15 * sizeof(GLfloat),
-               (float[15]){-0.5f, -0.5f, 0.0f, 0.f, 0.f, 0.0f, 0.5f, 0.0f, 0.5f,
-                           1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f},
-               GL_STATIC_DRAW);
+  // position data
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
+  glBufferData(
+      GL_ARRAY_BUFFER, 9 * sizeof(GLfloat),
+      (float[9]){-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f},
+      GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_POSITION_DATA;
 
+  // texcoord data
+  glGenBuffers(1, &geom.gl.texcoord_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.texcoord_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat),
+               (float[6]){0.f, 0.f, 0.5f, 1.0f, 1.0f, 0.0f}, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_TEXCOORD_DATA;
+
+  // index/elements
   glGenBuffers(1, &geom.gl.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 /* trig 1 */ * sizeof(GLuint),
                (GLuint[3]){0, 1, 2}, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  geom.num_indices = 3;
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_INDICES;
+
   return geom;
 }
 
@@ -73,8 +88,9 @@ csg_geometry_t csg_geometry_create_cube(void) {
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
 
-  glGenBuffers(1, &geom.gl.vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
+  // position data
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
   glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat),
                (float[24]){
                    // bottom half, cw from near-left, [0]
@@ -106,6 +122,7 @@ csg_geometry_t csg_geometry_create_cube(void) {
                },
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_POSITION_DATA;
 
   glGenBuffers(1, &geom.gl.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
@@ -115,6 +132,7 @@ csg_geometry_t csg_geometry_create_cube(void) {
                    1, 5, 6, 6, 3, 1, 1, 5, 4, 4, 0, 1, 3, 7, 6, 6, 2, 3},
       GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_INDICES;
 
   return geom;
 }
@@ -163,11 +181,14 @@ csg_geometry_t csg_geometry_create_sphere(int gradation) {
   // hardware
   geom.num_indices = num_vertices;
 
-  glGenBuffers(1, &geom.gl.vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
   glBufferData(GL_ARRAY_BUFFER, num_vertices * 3 * sizeof(GLfloat), vertex_data,
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_POSITION_DATA;
+
+  // TODO: elements
 
   return geom;
 }
@@ -184,21 +205,33 @@ csg_geometry_t csg_geometry_create_quad(void) {
   geom.gl.polygon_mode = GL_FILL;
   geom.material = csg_material_none();
 
-  glGenBuffers(1, &geom.gl.vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.vbo);
-  glBufferData(GL_ARRAY_BUFFER, 4 * 5 /* x,y,z,s,t */ * sizeof(GLfloat),
-               (float[4 * 5]){-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, -0.5f, 0.5f,
-                              0.0f,  0.0f,  1.0f,  0.5f, 0.5f, 0.0f,  1.0f,
-                              1.0f,  0.5f,  -0.5f, 0.0f, 1.0f, 0.0f},
+  // position data
+  glGenBuffers(1, &geom.gl.position_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.position_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(GLfloat),
+               (float[12]){-0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f,
+                           0.0f, 0.5f, -0.5f, 0.0f},
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_POSITION_DATA;
 
+  // texcoord data
+  glGenBuffers(1, &geom.gl.texcoord_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, geom.gl.texcoord_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 8 /* x,y,z,s,t */ * sizeof(GLfloat),
+               (float[8]){0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f},
+               GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_TEXCOORD_DATA;
+
+  // elements
   glGenBuffers(1, &geom.gl.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.gl.ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                (3 /* trig 1 */ + 3 /* trig 2 */) * sizeof(GLuint),
                (GLuint[6]){0, 1, 2, 0, 2, 3}, GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  geom.flags |= CSG_GEOMETRY_FLAG_HAS_INDICES;
   geom.num_indices = 6;
 
   return geom;

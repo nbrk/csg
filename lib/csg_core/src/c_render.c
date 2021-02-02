@@ -62,31 +62,56 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
   set_uniforms(node, &projection, &view, &model);
 
   /*
-   * Setup vertex attributes streaming (via elements)
+   * Setup vertex attributes streaming (via either elements or verbatim). We use
+   * separate, optional data buffers. Attrib layout.locations in the shaders
+   * are: 0 - position data, 1 - normal data, 2 - texcoord data, 3 - vertex
+   * color data
    */
-  glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.vbo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.ibo);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-                        5 * sizeof(GLfloat) /* stride */,
-                        (const GLvoid*)(3 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  if (node->geometry.flags & CSG_GEOMETRY_FLAG_HAS_POSITION_DATA) {
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.position_vbo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+  if (node->geometry.flags & CSG_GEOMETRY_FLAG_HAS_NORMAL_DATA) {
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.normal_vbo);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+  if (node->geometry.flags & CSG_GEOMETRY_FLAG_HAS_TEXCOORD_DATA) {
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.texcoord_vbo);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+  if (node->geometry.flags & CSG_GEOMETRY_FLAG_HAS_COLOR_DATA) {
+    glBindBuffer(GL_ARRAY_BUFFER, node->geometry.gl.color_vbo);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
 
   /*
-   * Bind texture (either zero or a correct texo)
+   * Bind texture if the material has one
    */
-  glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
+  if (node->geometry.material.flags & CSG_FLAG_ENABLED) {
+    glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
+  }
 
   /*
-   * Draw elements
+   * Stream the above attrib data: draw elements or arrays (verbatim data as-is)
    */
   glPolygonMode(GL_FRONT_AND_BACK, node->geometry.gl.polygon_mode);
-  glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_indices,
-                 GL_UNSIGNED_INT, NULL);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  if (node->geometry.flags & CSG_GEOMETRY_FLAG_HAS_INDICES) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, node->geometry.gl.ibo);
+    glDrawElements(node->geometry.gl.draw_mode, node->geometry.num_indices,
+                   GL_UNSIGNED_INT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  } else {
+    glDrawArrays(node->geometry.gl.draw_mode, 0, node->geometry.num_indices);
+  }
 }
 
 static void render_node(csg_node_t* node, csg_mat4_t projection,
