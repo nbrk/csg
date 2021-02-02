@@ -99,13 +99,13 @@ int main(int argc, char** argv) {
   csg_geometry_t quad_geometry = csg_geometry_create_quad();
   csg_geometry_t tri_geometry = csg_geometry_create_triangle();
 
-  csg_texture_t tex = csg_texture_create_from_image(
+  csg_texture_t tex = csg_texture_create_2d_from_image(
       "/usr/home/nbrk/Downloads/junk/meshes/Map001c.bmp", true);
-  csg_texture_t tex1 = csg_texture_create_from_image(
+  csg_texture_t tex1 = csg_texture_create_2d_from_image(
       "/usr/home/nbrk/Downloads/junk/meshes/"
       "wildtextures_vintage-wood-planks-yellow-peeling-paint.jpg",
       false);
-  csg_texture_t tex2 = csg_texture_create_from_image(
+  csg_texture_t tex2 = csg_texture_create_2d_from_image(
       "/usr/home/nbrk/Downloads/junk/meshes/"
       "photos_2021_1_20_fst_creased-paper.jpg",
       false);

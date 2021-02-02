@@ -30,40 +30,24 @@ static csg_mat4_t from_glm_mat4s(mat4s m) { return *(csg_mat4_t*)&m; }
 
 static mat4s from_csg_mat4(csg_mat4_t m) { return *(mat4s*)&m; }
 
-static void set_uniforms(csg_node_t* node, csg_mat4_t* projection,
-                         csg_mat4_t* view, csg_mat4_t* model) {
-  // query the uniforms' locations
-  GLuint program = node->geometry.material.gl_program;
-  GLuint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");
-  GLuint u_model = glGetUniformLocation(program, "u_model");
-  GLuint u_view = glGetUniformLocation(program, "u_view");
-  GLuint u_projection = glGetUniformLocation(program, "u_projection");
-  GLint u_use_textures = glGetUniformLocation(program, "u_use_textures");
-
-  glUniform4fv(u_diffuse_color, 1,
-               (GLfloat*)&node->geometry.material.diffuse_color);
-  glUniformMatrix4fv(u_model, 1, GL_FALSE, (GLfloat*)model);
-  glUniformMatrix4fv(u_view, 1, GL_FALSE, (GLfloat*)view);
-  glUniformMatrix4fv(u_projection, 1, GL_FALSE, (GLfloat*)projection);
-  glUniform1i(u_use_textures,
-              (node->geometry.material.texture.flags & CSG_FLAG_ENABLED) != 0);
-}
-
-static void do_render_node(csg_node_t* node, csg_mat4_t projection,
-                           csg_mat4_t view, csg_mat4_t model) {
+static void render_node(csg_node_t* node, csg_mat4_t projection,
+                        csg_mat4_t view, csg_mat4_t model) {
   assert(node->geometry.flags & CSG_FLAG_ENABLED);
-  assert(node->geometry.material.flags & CSG_FLAG_ENABLED);
+  assert(node->shader.flags & CSG_FLAG_ENABLED);
 
-  glUseProgram(node->geometry.material.gl_program);
+  glUseProgram(node->shader.program);
 
   /*
    * Set uniforms
    */
-  set_uniforms(node, &projection, &view, &model);
+  node->shader.u_projection = projection;
+  node->shader.u_view = view;
+  node->shader.u_model = model;
+  csg_shader_set_all_uniforms(&node->shader);
 
   /*
    * Setup vertex attributes streaming (via either elements or verbatim). We use
-   * separate, optional data buffers. Attrib layout.locations in the shaders
+   * separate, optional data buffers. Attrib layout/locations in the shaders
    * are: 0 - position data, 1 - normal data, 2 - texcoord data, 3 - vertex
    * color data
    */
@@ -93,10 +77,11 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
   }
 
   /*
-   * Bind texture if the material has one
+   * Bind texture if we have one
    */
-  if (node->geometry.material.flags & CSG_FLAG_ENABLED) {
-    glBindTexture(GL_TEXTURE_2D, node->geometry.material.texture.gl.texo);
+  if (node->texture.flags & CSG_FLAG_ENABLED) {
+    //    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(node->texture.gl.type, node->texture.gl.texo);
   }
 
   /*
@@ -114,21 +99,28 @@ static void do_render_node(csg_node_t* node, csg_mat4_t projection,
   }
 }
 
-static void render_node(csg_node_t* node, csg_mat4_t projection,
-                        csg_mat4_t view, csg_mat4_t model) {
-  // update the given model matrix with our transform
+static void process_node(csg_node_t* node, csg_mat4_t projection,
+                         csg_mat4_t view, csg_mat4_t model) {
+  /*
+   * Apply our model transforms to the current matrix, even if we don't
+   * have something to draw to the screen.
+   */
   model = from_glm_mat4s(glms_mat4_mul(
       from_csg_mat4(csg_transform_calc_model_matrix(&node->transform)),
       from_csg_mat4(model)));
 
-  // do the actual rendering if the node has geometry
+  /*
+   * If we have an enabled geometry and a shader, then draw ourselfes
+   */
   if ((node->geometry.flags & CSG_FLAG_ENABLED) != 0 &&
-      (node->geometry.material.flags & CSG_FLAG_ENABLED) != 0)
-    do_render_node(node, projection, view, model);
+      (node->shader.flags & CSG_FLAG_ENABLED) != 0)
+    render_node(node, projection, view, model);
 
-  // propagate to children
+  /*
+   * Recursively process children proagating the updated model matrix further.
+   */
   for (size_t i = 0; i < node->num_children; i++)
-    render_node(node->children[i], projection, view, model);
+    process_node(node->children[i], projection, view, model);
 }
 
 void csg_render(csg_node_t* root, csg_camera_t camera, csg_vec4_t clear_color) {
@@ -139,5 +131,5 @@ void csg_render(csg_node_t* root, csg_camera_t camera, csg_vec4_t clear_color) {
   csg_mat4_t view = csg_camera_calc_view_matrix(camera);
   csg_mat4_t model = from_glm_mat4s(glms_mat4_identity());
 
-  if (root != NULL) render_node(root, projection, view, model);
+  if (root != NULL) process_node(root, projection, view, model);
 }

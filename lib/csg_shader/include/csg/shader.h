@@ -26,12 +26,7 @@
 
 /*
  *
- * C Scene-Graph (image/texture loading)
+ * C Scene-Graph (shader collection)
  *
  */
-
-extern csg_texture_t csg_texture_create_2d_from_image(const char* path,
-                                                      bool vert_flip);
-extern csg_texture_t csg_texture_create_cubemap_from_image(
-    const char* right, const char* left, const char* top, const char* bottom,
-    const char* front, const char* back, bool vert_flip);
+extern const char* csg_shader_collection_get(const char* name, GLenum type);

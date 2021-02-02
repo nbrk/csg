@@ -36,7 +36,6 @@ csg_geometry_t csg_geometry_none(void) {
   geom.gl.texcoord_vbo = 0;
   geom.gl.color_vbo = 0;
   geom.gl.ibo = 0;
-  geom.material = csg_material_none();
 
   return geom;
 }
@@ -47,7 +46,6 @@ csg_geometry_t csg_geometry_create_triangle(void) {
   geom.flags = CSG_FLAG_ENABLED;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
-  geom.material = csg_material_none();
   geom.num_indices = 3;
 
   // position data
@@ -86,7 +84,6 @@ csg_geometry_t csg_geometry_create_cube(void) {
   geom.num_indices = 36;  // XXX
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
-  geom.material = csg_material_none();
 
   // position data
   glGenBuffers(1, &geom.gl.position_vbo);
@@ -143,7 +140,6 @@ csg_geometry_t csg_geometry_create_sphere(int gradation) {
   geom.flags = CSG_FLAG_ENABLED;
   geom.gl.draw_mode = GL_TRIANGLE_STRIP;
   geom.gl.polygon_mode = GL_FILL;
-  geom.material = csg_material_none();
 
   // client data buffer
   const float PI = 3.141592f;
@@ -203,7 +199,6 @@ csg_geometry_t csg_geometry_create_quad(void) {
   geom.flags = CSG_FLAG_ENABLED;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
-  geom.material = csg_material_none();
 
   // position data
   glGenBuffers(1, &geom.gl.position_vbo);
@@ -218,7 +213,7 @@ csg_geometry_t csg_geometry_create_quad(void) {
   // texcoord data
   glGenBuffers(1, &geom.gl.texcoord_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, geom.gl.texcoord_vbo);
-  glBufferData(GL_ARRAY_BUFFER, 8 /* x,y,z,s,t */ * sizeof(GLfloat),
+  glBufferData(GL_ARRAY_BUFFER, 8 /* s,t */ * sizeof(GLfloat),
                (float[8]){0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f},
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

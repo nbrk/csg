@@ -24,3 +24,5 @@
 
 extern csg_mat4_t csg_camera_calc_projection_matrix(csg_camera_t camera);
 extern csg_mat4_t csg_camera_calc_view_matrix(csg_camera_t camera);
+
+extern void csg_shader_set_all_uniforms(const csg_shader_t* shader);

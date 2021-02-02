@@ -95,18 +95,10 @@ typedef struct {
 typedef struct {
   int flags;
   struct {
-    unsigned texo;  // texture object (texture ID)
-    // TODO
+    GLuint texo;  // texture object (texture ID)
+    GLenum type;  // target
   } gl;
 } csg_texture_t;
-
-// TODO: material system
-typedef struct {
-  int flags;
-  csg_texture_t texture;
-  csg_vec4_t diffuse_color;
-  unsigned gl_program;
-} csg_material_t;
 
 typedef struct {
   int flags;
@@ -120,8 +112,20 @@ typedef struct {
     GLuint texcoord_vbo;
     GLuint color_vbo;
   } gl;
-  csg_material_t material;
 } csg_geometry_t;
+
+typedef struct {
+  int flags;
+  GLuint program;
+
+  // TODO: caching of uniform locs
+  // uniforms required to exist in all shaders
+  csg_mat4_t u_model;
+  csg_mat4_t u_view;
+  csg_mat4_t u_projection;
+  // additional uniforms
+  csg_vec4_t u_diffuse_color;
+} csg_shader_t;
 
 typedef struct csg_node_t csg_node_t;
 struct csg_node_t {
@@ -129,24 +133,27 @@ struct csg_node_t {
   csg_node_t** children;
   size_t num_children;
   void* cookie;
+
   csg_transform_t transform;
   csg_geometry_t geometry;
+  csg_shader_t shader;
+  csg_texture_t texture;
 };
 
 /******************************************************************************
  *
  * FUNCTIONS
  */
+#define csg_malloc(x) csg_malloc_dbg(x, __FILE__, __LINE__)
+#define csg_calloc(x, y) csg_calloc_dbg(x, y, __FILE__, __LINE__)
+#define csg_realloc(x, y) csg_realloc_dbg(x, y, __FILE__, __LINE__)
+#define csg_free(x) csg_free_dbg(x, __FILE__, __LINE__)
 extern void* csg_calloc_dbg(size_t number, size_t size, const char* file,
                             int line);
 extern void* csg_malloc_dbg(size_t size, const char* file, int line);
 extern void* csg_realloc_dbg(void* mem, size_t size, const char* file,
                              int line);
 extern void csg_free_dbg(void* mem, const char* file, int line);
-#define csg_malloc(x) csg_malloc_dbg(x, __FILE__, __LINE__)
-#define csg_calloc(x, y) csg_calloc_dbg(x, y, __FILE__, __LINE__)
-#define csg_realloc(x, y) csg_realloc_dbg(x, y, __FILE__, __LINE__)
-#define csg_free(x) csg_free_dbg(x, __FILE__, __LINE__)
 
 extern void csg_malloc_set_debug(bool value);
 extern void csg_malloc_print_stat(void);
@@ -155,6 +162,8 @@ extern csg_node_t* csg_node_create(csg_node_t* parent, void* cookie);
 extern void csg_node_traverse(csg_node_t* node, csg_traverse_mode_e type,
                               void (*func)(csg_node_t*, void*),
                               void* func_cookie);
+
+extern csg_transform_t csg_transform_none(void);
 extern csg_mat4_t csg_transform_calc_model_matrix(csg_transform_t* transform);
 
 csg_camera_t csg_camera_create(csg_projection_mode_e projection,
@@ -184,5 +193,9 @@ extern csg_geometry_t csg_geometry_create_quad(void);
 
 extern csg_texture_t csg_texture_none(void);
 
-extern csg_material_t csg_material_create(void);
-extern csg_material_t csg_material_none(void);
+extern csg_shader_t csg_shader_none(void);
+extern csg_shader_t csg_shader_create(unsigned int gl_program);
+extern unsigned int csg_shader_program_assemble_mem(const char* vertex_str,
+                                                    const char* fragment_str);
+extern unsigned int csg_shader_program_assemble(const char* vertex_path,
+                                                const char* fragment_path);

@@ -22,6 +22,14 @@
 #include <cglm/struct.h>
 #include <csg/core.h>
 
+csg_transform_t csg_transform_none(void) {
+  csg_transform_t transform;
+  transform.rotation = (csg_vec3_t){0.0f, 0.0f, 0.0f};
+  transform.translation = (csg_vec3_t){0.0f, 0.0f, 0.0f};
+  transform.scale = (csg_vec3_t){1.0f, 1.0f, 1.0f};
+  return transform;
+}
+
 static mat4s calc_translation_matrix(csg_transform_t* transform) {
   mat4s m;
   m = glms_translate_make(*(vec3s*)&transform->translation);

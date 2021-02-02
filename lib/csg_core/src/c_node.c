@@ -31,10 +31,11 @@ csg_node_t* csg_node_create(csg_node_t* parent, void* cookie) {
   node->children = NULL;
   node->num_children = 0;
   node->cookie = cookie;
-  node->transform.rotation = (csg_vec3_t){0.0f, 0.0f, 0.0f};
-  node->transform.translation = (csg_vec3_t){0.0f, 0.0f, 0.0f};
-  node->transform.scale = (csg_vec3_t){1.0f, 1.0f, 1.0f};
+
+  node->transform = csg_transform_none();
   node->geometry = csg_geometry_none();
+  node->shader = csg_shader_none();
+  node->texture = csg_texture_none();
 
   // TODO: support dynamic child/parent relationships
   if (parent != NULL) {
@@ -47,10 +48,8 @@ csg_node_t* csg_node_create(csg_node_t* parent, void* cookie) {
   return node;
 }
 
-void csg_node_traverse(csg_node_t* node,
-                       csg_traverse_mode_e type,
-                       void (*func)(csg_node_t*, void*),
-                       void* func_cookie) {
+void csg_node_traverse(csg_node_t* node, csg_traverse_mode_e type,
+                       void (*func)(csg_node_t*, void*), void* func_cookie) {
   assert(node != NULL);
 
   if (type == CSG_TRAVERSE_ONLY_SELF) {

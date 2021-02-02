@@ -72,7 +72,6 @@ csg_geometry_t csg_geometry_create_from_wavefront(const char* path) {
   geom.flags = CSG_FLAG_ENABLED;
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
-  geom.material = csg_material_none();
 
   // position data
   glGenBuffers(1, &geom.gl.position_vbo);

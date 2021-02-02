@@ -29,6 +29,7 @@ csg_texture_t csg_texture_none(void) {
 
   texture.flags = 0;
   texture.gl.texo = 0;
+  texture.gl.type = 0;
 
   return texture;
 }
