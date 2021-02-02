@@ -6,20 +6,21 @@ once all the stuff gets implemented.
 ### Features
 Right now implemented features include:
 - **Concise, extremely easy-to-use API**
-- 3D Affine transformations, cameras
+- 3D Affine transformations, cameras, textures, shader abstraction, etc.
 - Multiple windows support with dead-simple controls
-- Smooth sharing of geometries, materials, etc. between windows/contexts
+- Smooth sharing of geometries, textures, etc. between windows/contexts
 - Embedded powerful UI (thanks to `Nuklear`), with no setup required
-- Immediate and relative (cursor delta, up-down transition, etc.) input states available each frame
+- Immediate and relative (cursor delta, up-down transition, etc.) input states and delta-time (time the last frame took to render) available each frame
 - Draw, transforms, etc. may be used straight-away inside any OpenGL context (no need of setup, even the `csg_gui` adapters are fully optional).
 - Various graph traversal patterns: (DFS, BFS, path-to-root, etc.)
-- Wavefront .OBJ meshes
+- Wavefront .OBJ meshes loading
 
 ### Requirements
 The core library depends only on `cglm` and GL/GLEW. The gui_glfw3 adapter 
 depends on glfw3.
 
 ### Example
+***WORK IN PROGRESS***.
 This is how a 'input-update-render' loop may look like with the API:
 
 ``` c
