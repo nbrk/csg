@@ -147,27 +147,9 @@ unsigned int csg_shader_program_assemble(const char* vertex_path,
 csg_shader_t csg_shader_create(unsigned int gl_program) {
   assert(gl_program != 0);
 
-  // read the uniform locations and cache them in the shader structure
-  GLint loc_u_model = glGetUniformLocation(gl_program, "u_model");
-  GLint loc_u_view = glGetUniformLocation(gl_program, "u_view");
-  GLint loc_u_projection = glGetUniformLocation(gl_program, "u_projection");
-  GLint loc_u_diffuse_color =
-      glGetUniformLocation(gl_program, "u_diffuse_color");
-
-  // these uniform names are obligatory: they required to exist in all shaders
-  assert(loc_u_model != -1);
-  assert(loc_u_view != -1);
-  assert(loc_u_projection != -1);
-
   csg_shader_t shader;
   shader.flags = CSG_FLAG_ENABLED;
   shader.gl.program = gl_program;
-
-  // unigorm location cache
-  shader.gl.loc_u_model = loc_u_model;
-  shader.gl.loc_u_view = loc_u_view;
-  shader.gl.loc_u_projection = loc_u_projection;
-  shader.gl.loc_u_diffuse_color = loc_u_diffuse_color;
 
   // initial uniform values
   shader.u_diffuse_color = (csg_vec4_t){1.0f, 1.0f, 1.0f, 1.0f};
@@ -189,25 +171,25 @@ csg_shader_t csg_shader_none(void) {
 }
 
 void csg_shader_set_all_uniforms(const csg_shader_t* shader) {
-  // TODO: cache of the uniform locations
   /*
    * Query uniform locations
    */
-  //  GLuint program = shader->program;
-  //  GLuint u_model = glGetUniformLocation(program, "u_model");
-  //  GLuint u_view = glGetUniformLocation(program, "u_view");
-  //  GLuint u_projection = glGetUniformLocation(program, "u_projection");
-  //  GLuint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");
+  GLuint program = shader->gl.program;
+  GLint u_model = glGetUniformLocation(program, "u_model");
+  GLint u_view = glGetUniformLocation(program, "u_view");
+  GLint u_projection = glGetUniformLocation(program, "u_projection");
+  GLint u_diffuse_color = glGetUniformLocation(program, "u_diffuse_color");
 
   /*
    * Set the uniforms
    */
-  glUniform4fv(shader->gl.loc_u_diffuse_color, 1,
-               (GLfloat*)&shader->u_diffuse_color);
-  glUniformMatrix4fv(shader->gl.loc_u_model, 1, GL_FALSE,
-                     (GLfloat*)&shader->u_model);
-  glUniformMatrix4fv(shader->gl.loc_u_view, 1, GL_FALSE,
-                     (GLfloat*)&shader->u_view);
-  glUniformMatrix4fv(shader->gl.loc_u_projection, 1, GL_FALSE,
-                     (GLfloat*)&shader->u_projection);
+  if (u_diffuse_color != -1)
+    glUniform4fv(u_diffuse_color, 1, (GLfloat*)&shader->u_diffuse_color);
+  if (u_model != -1)
+    glUniformMatrix4fv(u_model, 1, GL_FALSE, (GLfloat*)&shader->u_model);
+  if (u_view != -1)
+    glUniformMatrix4fv(u_view, 1, GL_FALSE, (GLfloat*)&shader->u_view);
+  if (u_projection != -1)
+    glUniformMatrix4fv(u_projection, 1, GL_FALSE,
+                       (GLfloat*)&shader->u_projection);
 }

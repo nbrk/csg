@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 
   csg_node_t* node2 = csg_node_create(root, NULL);
   node2->geometry = quad_geom;
-  node1->texture = grass_tex;
+  node2->texture = grass_tex;
   node2->shader = csg_shader_create(simple_prog);
   node2->shader.u_diffuse_color = (csg_vec4_t){0.0f, 0.0f, 1.0f, 1.0f};
 
@@ -104,6 +104,12 @@ int main(int argc, char** argv) {
     }
     if (adapter.keyboard[CSG_GUI_KEY_0] == CSG_GUI_PRESS) {
       node1->shader.gl.program = cube_tex_prog;
+    }
+    if (adapter.keyboard[CSG_GUI_KEY_M] == CSG_GUI_PRESS) {
+      node1->geometry.gl.polygon_mode = GL_LINES;
+    }
+    if (adapter.keyboard[CSG_GUI_KEY_N] == CSG_GUI_PRESS) {
+      node1->geometry.gl.polygon_mode = GL_FILL;
     }
 
     csg_gui_adapter_end_frame(&adapter, 120);

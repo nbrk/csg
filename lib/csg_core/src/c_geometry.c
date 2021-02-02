@@ -81,7 +81,6 @@ csg_geometry_t csg_geometry_create_cube(void) {
   csg_geometry_t geom = csg_geometry_none();
 
   geom.flags = CSG_FLAG_ENABLED;
-  geom.num_indices = 36;  // XXX
   geom.gl.draw_mode = GL_TRIANGLES;
   geom.gl.polygon_mode = GL_FILL;
 
@@ -130,6 +129,7 @@ csg_geometry_t csg_geometry_create_cube(void) {
       GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   geom.flags |= CSG_GEOMETRY_FLAG_HAS_INDICES;
+  geom.num_indices = 36;  // XXX
 
   return geom;
 }

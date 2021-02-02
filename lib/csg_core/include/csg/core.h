@@ -118,10 +118,6 @@ typedef struct {
   int flags;
   struct {
     GLuint program;
-    GLint loc_u_model;
-    GLint loc_u_view;
-    GLint loc_u_projection;
-    GLint loc_u_diffuse_color;
   } gl;
   // uniforms required to exist in all shaders
   csg_mat4_t u_model;
