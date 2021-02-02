@@ -91,19 +91,19 @@ int main(int argc, char** argv) {
     logic(root, &camera, &adapter);
 
     if (adapter.keyboard[CSG_GUI_KEY_1] == CSG_GUI_PRESS) {
-      node2->shader.program = simple_prog;
+      node2->shader.gl.program = simple_prog;
     }
     if (adapter.keyboard[CSG_GUI_KEY_2] == CSG_GUI_PRESS) {
-      node2->shader.program = tex_prog;
+      node2->shader.gl.program = tex_prog;
     }
     if (adapter.keyboard[CSG_GUI_KEY_3] == CSG_GUI_PRESS) {
-      node2->shader.program = tex_color_prog;
+      node2->shader.gl.program = tex_color_prog;
     }
     if (adapter.keyboard[CSG_GUI_KEY_9] == CSG_GUI_PRESS) {
-      node1->shader.program = simple_prog;
+      node1->shader.gl.program = simple_prog;
     }
     if (adapter.keyboard[CSG_GUI_KEY_0] == CSG_GUI_PRESS) {
-      node1->shader.program = cube_tex_prog;
+      node1->shader.gl.program = cube_tex_prog;
     }
 
     csg_gui_adapter_end_frame(&adapter, 120);

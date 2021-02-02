@@ -35,7 +35,7 @@ static void render_node(csg_node_t* node, csg_mat4_t projection,
   assert(node->geometry.flags & CSG_FLAG_ENABLED);
   assert(node->shader.flags & CSG_FLAG_ENABLED);
 
-  glUseProgram(node->shader.program);
+  glUseProgram(node->shader.gl.program);
 
   /*
    * Set uniforms
